@@ -27,4 +27,8 @@ public class Customer extends User{
     @OneToMany(mappedBy ="customer" )
     List<CustomerCredit> credits = new ArrayList<>();
 
+    @OneToMany(mappedBy = "customer")
+    List<Order> orders = new ArrayList<>();
+
+
 }

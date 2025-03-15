@@ -1,12 +1,12 @@
 package nycto.homeservices.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.experimental.FieldDefaults;
 import nycto.homeservices.base.BaseEntity;
 import lombok.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 
@@ -30,5 +30,8 @@ public class SubService extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "service_id",nullable = false)
     Service service;
+
+    @OneToMany(mappedBy = "subService")
+    List<Order> orders = new ArrayList<>();
 
 }

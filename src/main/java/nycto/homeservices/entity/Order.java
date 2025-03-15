@@ -45,4 +45,14 @@ public class Order extends BaseEntity {
     List<Proposal> proposals =new ArrayList<>();
 
 
+    @ManyToOne
+            @JoinColumn(name="customer_id", nullable=false)
+    Customer customer;
+
+
+    @ManyToOne
+    @JoinColumn(name="sub_service_id", nullable=false)
+    SubService subService;
+
+
 }
