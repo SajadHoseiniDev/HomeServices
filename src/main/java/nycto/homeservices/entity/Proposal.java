@@ -27,6 +27,8 @@ public class Proposal extends BaseEntity {
     @Column(nullable = false)
     LocalDateTime startTime;
 
+
+
     @ManyToOne
     @JoinColumn(name = "order_id", nullable = false)
     Order order ;

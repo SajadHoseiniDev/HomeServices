@@ -2,6 +2,8 @@ package nycto.homeservices.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import lombok.experimental.FieldDefaults;
 import nycto.homeservices.base.BaseEntity;
 import lombok.*;
@@ -23,5 +25,10 @@ public class SubService extends BaseEntity {
 
     @Column(nullable = false)
     String description;
+
+
+    @ManyToOne
+    @JoinColumn(name = "service_id",nullable = false)
+    Service service;
 
 }

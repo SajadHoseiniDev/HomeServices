@@ -1,9 +1,6 @@
 package nycto.homeservices.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -30,4 +27,7 @@ public class Service extends BaseEntity {
 
     @ManyToMany(mappedBy = "services")
     List<Specialist> specialists = new ArrayList<>();
+
+    @OneToMany(mappedBy = "service")
+    List<SubService> subServices = new ArrayList<>();
 }
