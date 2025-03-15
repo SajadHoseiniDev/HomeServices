@@ -7,6 +7,7 @@ import jakarta.persistence.InheritanceType;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import lombok.experimental.FieldDefaults;
 import nycto.homeservices.base.BaseEntity;
 
@@ -16,7 +17,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-
+@ToString
 @FieldDefaults( level = AccessLevel.PRIVATE)
 public class User extends BaseEntity {
 
