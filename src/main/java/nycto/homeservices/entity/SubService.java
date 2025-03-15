@@ -2,11 +2,9 @@ package nycto.homeservices.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
 import lombok.experimental.FieldDefaults;
+import nycto.homeservices.base.BaseEntity;
+import lombok.*;
 
 @Entity
 
@@ -15,9 +13,15 @@ import lombok.experimental.FieldDefaults;
 @ToString
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Customer extends User{
+public class SubService extends BaseEntity {
 
     @Column
-    Long credit;
+    String name;
+
+    @Column
+    Long basePrice;
+
+    @Column
+    String description;
 
 }
