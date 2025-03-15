@@ -7,6 +7,7 @@ import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.FieldDefaults;
 import nycto.homeservices.base.BaseEntity;
+import nycto.homeservices.entity.enums.UserStatus;
 
 import java.time.LocalDateTime;
 @Entity
@@ -24,7 +25,7 @@ public class User extends BaseEntity {
     @Column(nullable = false)
     String lastName;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     String email;
 
     @Column(nullable = false)

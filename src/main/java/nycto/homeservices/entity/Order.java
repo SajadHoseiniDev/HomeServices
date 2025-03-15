@@ -10,6 +10,7 @@ import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.FieldDefaults;
 import nycto.homeservices.base.BaseEntity;
+import nycto.homeservices.entity.enums.OrderStatus;
 
 import java.time.LocalDateTime;
 

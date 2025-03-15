@@ -15,13 +15,13 @@ import lombok.*;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class SubService extends BaseEntity {
 
-    @Column
+    @Column(nullable = false)
     String name;
 
-    @Column
+    @Column(nullable = false)
     Long basePrice;
 
-    @Column
+    @Column(nullable = false)
     String description;
 
 }

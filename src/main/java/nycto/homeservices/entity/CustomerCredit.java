@@ -19,7 +19,7 @@ import nycto.homeservices.base.BaseEntity;
 
 public class CustomerCredit extends BaseEntity {
 
-    @Column
+    @Column(nullable = false)
     Long amount;
 
 }

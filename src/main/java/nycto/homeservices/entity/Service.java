@@ -18,6 +18,6 @@ import nycto.homeservices.base.BaseEntity;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 
 public class Service extends BaseEntity {
-    @Column
+    @Column(nullable = false)
     String name;
 }

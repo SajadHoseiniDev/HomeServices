@@ -19,7 +19,7 @@ import nycto.homeservices.base.BaseEntity;
 
 public class SpecialistCredit extends BaseEntity {
 
-    @Column
+    @Column(nullable = false)
     Long amount;
 
 }
