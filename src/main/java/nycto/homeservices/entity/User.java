@@ -32,7 +32,7 @@ public class User extends BaseEntity {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    String status;
+    UserStatus status;
 
     @Column(nullable = false)
     LocalDateTime registrationDate;

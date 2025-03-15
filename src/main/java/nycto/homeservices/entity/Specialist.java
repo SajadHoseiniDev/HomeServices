@@ -22,7 +22,5 @@ public class Specialist extends User {
     @Column
     String profilePicUrl;
 
-    @Column
-    int credit;
 
 }

@@ -17,7 +17,4 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Customer extends User{
 
-    @Column
-    Long credit;
-
 }
