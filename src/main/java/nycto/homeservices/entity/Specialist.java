@@ -1,9 +1,6 @@
 package nycto.homeservices.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -29,6 +26,14 @@ public class Specialist extends User {
 
     @OneToMany(mappedBy = "specialist")
     List<SpecialistCredit> specialistCredits = new ArrayList<>();
+
+    @ManyToMany
+    @JoinTable(
+            name = "specialist_service",
+            joinColumns = @JoinColumn(name = "specialist_id"),
+            inverseJoinColumns = @JoinColumn(name = "service_id")
+    )
+    List<Service> services = new ArrayList<>();
 
 
 }
