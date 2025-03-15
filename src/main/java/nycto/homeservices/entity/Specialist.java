@@ -24,10 +24,10 @@ public class Specialist extends User {
     @Column
     String profilePicUrl;
 
-    @OneToMany(mappedBy = "specialist")
+    @OneToMany(mappedBy = "specialist",fetch = FetchType.LAZY)
     List<SpecialistCredit> specialistCredits = new ArrayList<>();
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "specialist_service",
             joinColumns = @JoinColumn(name = "specialist_id"),
@@ -36,7 +36,7 @@ public class Specialist extends User {
     List<Service> services = new ArrayList<>();
 
 
-    @OneToMany(mappedBy = "specialist")
+    @OneToMany(mappedBy = "specialist",fetch = FetchType.LAZY)
     List<Proposal > proposals = new ArrayList<>();
 
 

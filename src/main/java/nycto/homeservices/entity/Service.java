@@ -28,6 +28,6 @@ public class Service extends BaseEntity {
     @ManyToMany(mappedBy = "services")
     List<Specialist> specialists = new ArrayList<>();
 
-    @OneToMany(mappedBy = "service")
+    @OneToMany(mappedBy = "service",fetch = FetchType.LAZY)
     List<SubService> subServices = new ArrayList<>();
 }

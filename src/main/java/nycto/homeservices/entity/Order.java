@@ -54,7 +54,7 @@ public class Order extends BaseEntity {
     @JoinColumn(name="sub_service_id", nullable=false)
     SubService subService;
 
-    @OneToMany(mappedBy ="order" )
+    @OneToMany(mappedBy ="order" ,fetch = FetchType.LAZY)
     List<Comment> comments =new ArrayList<>();
 
 

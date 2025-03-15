@@ -31,7 +31,7 @@ public class SubService extends BaseEntity {
     @JoinColumn(name = "service_id",nullable = false)
     Service service;
 
-    @OneToMany(mappedBy = "subService")
+    @OneToMany(mappedBy = "subService",fetch = FetchType.LAZY)
     List<Order> orders = new ArrayList<>();
 
 }

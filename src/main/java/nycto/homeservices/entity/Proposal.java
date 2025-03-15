@@ -35,5 +35,5 @@ public class Proposal extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "specialist_id", nullable = false)
-    Specialist specialist; ;
+    Specialist specialist;
 }

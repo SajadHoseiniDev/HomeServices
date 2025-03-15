@@ -1,9 +1,6 @@
 package nycto.homeservices.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -24,13 +21,13 @@ import java.util.List;
 public class Customer extends User{
 
 
-    @OneToMany(mappedBy ="customer" )
+    @OneToMany(mappedBy ="customer",fetch = FetchType.LAZY )
     List<CustomerCredit> credits = new ArrayList<>();
 
-    @OneToMany(mappedBy = "customer")
+    @OneToMany(mappedBy = "customer",fetch = FetchType.LAZY)
     List<Order> orders = new ArrayList<>();
 
-    @OneToMany(mappedBy = "customer")
+    @OneToMany(mappedBy = "customer",fetch = FetchType.LAZY)
     List<Comment> comments = new ArrayList<>();
 
 
