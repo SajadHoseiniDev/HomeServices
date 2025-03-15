@@ -30,4 +30,8 @@ public class Proposal extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "order_id", nullable = false)
     Order order ;
+
+    @ManyToOne
+    @JoinColumn(name = "specialist_id", nullable = false)
+    Specialist specialist; ;
 }

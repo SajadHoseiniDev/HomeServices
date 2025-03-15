@@ -41,8 +41,8 @@ public class Order extends BaseEntity {
     @Enumerated(EnumType.STRING)
     OrderStatus status;
 
-    @OneToMany
-    List<Proposal> proposal =new ArrayList<>();
+    @OneToMany(mappedBy ="order" )
+    List<Proposal> proposals =new ArrayList<>();
 
 
 }

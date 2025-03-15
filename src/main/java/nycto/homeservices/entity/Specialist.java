@@ -36,4 +36,8 @@ public class Specialist extends User {
     List<Service> services = new ArrayList<>();
 
 
+    @OneToMany(mappedBy = "specialist")
+    List<Proposal > proposals = new ArrayList<>();
+
+
 }
