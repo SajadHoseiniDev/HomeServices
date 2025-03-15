@@ -1,7 +1,7 @@
-package nycto.homeservices.entity;
+package nycto.homeservices.entity.enums;
 
 public enum UserStatus {
-    New,
+    NEW,
     PENDING_APPROVAL,
     APPROVED
 }

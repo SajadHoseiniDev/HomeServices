@@ -1,4 +1,4 @@
-package nycto.homeservices.entity;
+package nycto.homeservices.entity.enums;
 
 public enum OrderStatus {
 
