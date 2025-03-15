@@ -1,8 +1,6 @@
 package nycto.homeservices.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -24,4 +22,13 @@ public class Comment extends BaseEntity {
 
     @Column
     String comment;
+
+    @ManyToOne
+            @JoinColumn(name = "customer_id", nullable = false)
+    Customer customer;
+
+    @ManyToOne
+            @JoinColumn(name = "order_id", nullable = false)
+
+    Order order;
 }
