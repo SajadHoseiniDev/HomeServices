@@ -1,9 +1,6 @@
 package nycto.homeservices.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -15,11 +12,11 @@ import nycto.homeservices.entity.enums.OrderStatus;
 import java.time.LocalDateTime;
 
 @Entity
+@Table(name = "orders")
 
 @Getter
 @Setter
 @ToString
-
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Order extends BaseEntity {
 

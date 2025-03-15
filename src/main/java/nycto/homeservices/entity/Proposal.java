@@ -2,6 +2,7 @@ package nycto.homeservices.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,6 +13,7 @@ import nycto.homeservices.base.BaseEntity;
 import java.time.LocalDateTime;
 
 @Entity
+@Table(name = "proposals")
 @Getter
 @Setter
 @ToString
