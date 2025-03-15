@@ -10,6 +10,8 @@ import nycto.homeservices.base.BaseEntity;
 import nycto.homeservices.entity.enums.OrderStatus;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "orders")
@@ -38,6 +40,9 @@ public class Order extends BaseEntity {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     OrderStatus status;
+
+    @OneToMany
+    List<Proposal> proposal =new ArrayList<>();
 
 
 }

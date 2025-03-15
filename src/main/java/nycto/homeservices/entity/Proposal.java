@@ -1,8 +1,6 @@
 package nycto.homeservices.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -28,4 +26,8 @@ public class Proposal extends BaseEntity {
 
     @Column(nullable = false)
     LocalDateTime startTime;
+
+    @ManyToOne
+    @JoinColumn(name = "order_id", nullable = false)
+    Order order ;
 }
