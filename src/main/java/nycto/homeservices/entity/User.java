@@ -1,9 +1,6 @@
 package nycto.homeservices.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Inheritance;
-import jakarta.persistence.InheritanceType;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -34,6 +31,7 @@ public class User extends BaseEntity {
     String password;
 
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     String status;
 
     @Column(nullable = false)
