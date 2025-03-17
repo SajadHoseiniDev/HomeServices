@@ -25,7 +25,11 @@ public record UserDto(
         @NotEmpty(message = "email can't be empty!")
         @Pattern(regexp = "^[A-Za-z0-9+_.-]+@(.+)$", message = "Invalid email format")
         String email
-        , UserStatus status
+
+        ,
+        @NotNull(message = "UserStatus can't ne null!")
+        UserStatus status
+
         , LocalDateTime registrationDate
 ) {
 }
