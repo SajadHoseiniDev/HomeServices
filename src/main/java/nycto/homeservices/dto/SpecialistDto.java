@@ -26,7 +26,7 @@ public record SpecialistDto(
 
         ,
         @NotEmpty(message = "url can't be empty!")
-        @Pattern(regexp = "^(https?:\\/\\/)?([a-zA-Z0-9\\-]+\\.)+[a-zA-Z]{2,6}\\/?[^\\s]*\\.(jpg|jpeg|png|gif)$  ")
+        @Pattern(regexp = "^(?:https?:\\\\/\\\\/)?([a-zA-Z0-9\\\\-\\\\.]+\\\\.)*[a-zA-Z0-9\\\\-\\\\.]+\\\\.[a-zA-Z]{2,6}\\\\/?.*\\\\.(jpg|jpeg|png|gif)$|^[a-zA-Z0-9\\\\-\\\\.]+\\\\.(jpg|jpeg|png|gif)$")
         String profilePicUrl
 ) {
 }
