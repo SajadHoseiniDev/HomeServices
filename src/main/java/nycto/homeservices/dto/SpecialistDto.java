@@ -1,21 +1,18 @@
 package nycto.homeservices.dto;
 
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.*;
 
 public record SpecialistDto(
         Long id
-        ,@Min(3)
-        @Max(30)
+        ,
         @NotEmpty(message = "firstName can't be empty!")
+        @Size(min = 3, max = 30, message = "fistName should be between 3 and 30 characters!")
         String firstName
 
         ,
-        @Min(3)
-        @Max(30)
+
         @NotEmpty(message = "lastName can't be empty!")
+        @Size(min = 3, max = 30, message = "lastName should be between 3 and 30 characters!")
         String lastName
 
         ,
@@ -23,7 +20,7 @@ public record SpecialistDto(
         @Pattern(regexp = "^[A-Za-z0-9+_.-]+@(.+)$", message = "Invalid email format")
         String email
 
-        ,@Min(1)
+        , @Min(1)
         @Max(5)
         int rating
 

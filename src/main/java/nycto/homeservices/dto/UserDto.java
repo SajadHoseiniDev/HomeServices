@@ -1,9 +1,6 @@
 package nycto.homeservices.dto;
 
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.*;
 import nycto.homeservices.entity.enums.UserStatus;
 
 import java.time.LocalDateTime;
@@ -13,15 +10,15 @@ public record UserDto(
         Long id
 
         ,
-        @Min(3)
-        @Max(30)
+
         @NotEmpty(message = "firstName can't be empty!")
+        @Size(min = 3, max = 30, message = "fistName should be between 3 and 30 characters!")
         String firstName
 
         ,
-        @Min(3)
-        @Max(30)
+
         @NotEmpty(message = "lastName can't be empty!")
+        @Size(min = 3, max = 30, message = "lastName should be between 3 and 30 characters!")
         String lastName
 
         ,
@@ -30,4 +27,5 @@ public record UserDto(
         String email
         , UserStatus status
         , LocalDateTime registrationDate
-) {}
+) {
+}
