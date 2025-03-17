@@ -21,7 +21,7 @@ public class Specialist extends User {
     @Column
     int rating;
 
-    @Column
+    @Column(nullable = false)
     String profilePicUrl;
 
     @OneToMany(mappedBy = "specialist",fetch = FetchType.LAZY)
