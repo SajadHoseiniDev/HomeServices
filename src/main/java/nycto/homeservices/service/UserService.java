@@ -27,15 +27,14 @@ public class UserService {
 
         if (!validationUtil.validate(createDto))
             throw new NotValidInputException("Not valid user data");
+
         if (userRepository.findByEmail(createDto.email()).isPresent())
             throw new DuplicateDataException
                     ("user with email:" + createDto.email()
                             + "is already exists");
-        User user = new User();
-        user.setFirstName(createDto.firstName());
-        user.setLastName(createDto.lastName());
-        user.setEmail(createDto.email());
-        user.setPassword(createDto.password());
+
+
+        User user =userMapper.toEntity(createDto);
         user.setRegistrationDate(LocalDateTime.now());
         user.setStatus(UserStatus.NEW);
 
@@ -43,7 +42,8 @@ public class UserService {
 
         return userMapper.toResponseDto(savedUser);
 
-
     }
+
+
 
 }
