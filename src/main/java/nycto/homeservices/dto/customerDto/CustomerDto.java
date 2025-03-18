@@ -1,4 +1,4 @@
-package nycto.homeservices.dto;
+package nycto.homeservices.dto.customerDto;
 
 import jakarta.validation.constraints.*;
 
