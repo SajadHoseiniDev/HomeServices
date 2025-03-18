@@ -1,4 +1,4 @@
-package nycto.homeservices.dto;
+package nycto.homeservices.dto.userDto;
 
 import jakarta.validation.constraints.*;
 import nycto.homeservices.entity.enums.UserStatus;
