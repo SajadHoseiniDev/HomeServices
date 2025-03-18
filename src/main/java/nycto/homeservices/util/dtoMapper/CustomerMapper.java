@@ -5,6 +5,7 @@ import nycto.homeservices.dto.customerDto.CustomerCreateDto;
 import nycto.homeservices.dto.customerDto.CustomerResponseDto;
 import nycto.homeservices.dto.customerDto.CustomerUpdateDto;
 import nycto.homeservices.entity.Customer;
+import nycto.homeservices.entity.enums.UserType;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -17,6 +18,7 @@ public class CustomerMapper {
         customer.setEmail(createDto.email());
         customer.setPassword(createDto.password());
         customer.setCredit(createDto.credit());
+        customer.setUserType(UserType.CUSTOMER);
         return customer;
     }
 

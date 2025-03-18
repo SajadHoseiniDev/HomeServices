@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 public class CustomerService {
     private final CustomerRepository customerRepository;
     private final ValidationUtil validationUtil;
-    private CustomerMapper customerMapper;
+    private final CustomerMapper customerMapper;
 
 
     public CustomerResponseDto createCustomer(CustomerCreateDto createDto)

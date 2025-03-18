@@ -8,6 +8,7 @@ import lombok.ToString;
 import lombok.experimental.FieldDefaults;
 import nycto.homeservices.base.BaseEntity;
 import nycto.homeservices.entity.enums.UserStatus;
+import nycto.homeservices.entity.enums.UserType;
 
 import java.time.LocalDateTime;
 @Entity
@@ -38,6 +39,9 @@ public class User extends BaseEntity {
     @Column(nullable = false)
     LocalDateTime registrationDate;
 
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private UserType userType;
 
 
 }
