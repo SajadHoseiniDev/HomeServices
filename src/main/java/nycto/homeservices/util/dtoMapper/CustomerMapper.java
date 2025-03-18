@@ -1,7 +1,10 @@
-package nycto.homeservices.dto.customerDto;
+package nycto.homeservices.util.dtoMapper;
 
+
+import nycto.homeservices.dto.customerDto.CustomerCreateDto;
+import nycto.homeservices.dto.customerDto.CustomerResponseDto;
+import nycto.homeservices.dto.customerDto.CustomerUpdateDto;
 import nycto.homeservices.entity.Customer;
-import nycto.homeservices.entity.enums.UserStatus;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -17,11 +20,11 @@ public class CustomerMapper {
         return customer;
     }
 
-    public Customer toEntity(CustomerUpdateDto updateDto,Customer existingCustomer) {
+    public Customer toEntity(CustomerUpdateDto updateDto, Customer existingCustomer) {
         existingCustomer.setFirstName(updateDto.firstName());
         existingCustomer.setLastName(updateDto.lastName());
         existingCustomer.setEmail(updateDto.email());
-        existingCustomer.setStatus(UserStatus.APPROVED);
+        existingCustomer.setStatus(updateDto.status());
         existingCustomer.setCredit(updateDto.credit());
         return existingCustomer;
 

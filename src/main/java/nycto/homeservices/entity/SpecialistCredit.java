@@ -12,7 +12,6 @@ import lombok.experimental.FieldDefaults;
 import nycto.homeservices.base.BaseEntity;
 
 @Entity
-
 @Getter
 @Setter
 @ToString

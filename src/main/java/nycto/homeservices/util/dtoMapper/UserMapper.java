@@ -1,5 +1,8 @@
-package nycto.homeservices.dto.userDto;
+package nycto.homeservices.util.dtoMapper;
 
+import nycto.homeservices.dto.userDto.UserCreateDto;
+import nycto.homeservices.dto.userDto.UserResponseDto;
+import nycto.homeservices.dto.userDto.UserUpdateDto;
 import nycto.homeservices.entity.User;
 import org.springframework.stereotype.Component;
 

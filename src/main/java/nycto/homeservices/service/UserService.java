@@ -2,8 +2,7 @@ package nycto.homeservices.service;
 
 import lombok.RequiredArgsConstructor;
 import nycto.homeservices.dto.userDto.UserCreateDto;
-import nycto.homeservices.dto.userDto.UserDto;
-import nycto.homeservices.dto.userDto.UserMapper;
+import nycto.homeservices.util.dtoMapper.UserMapper;
 import nycto.homeservices.dto.userDto.UserResponseDto;
 import nycto.homeservices.entity.User;
 import nycto.homeservices.entity.enums.UserStatus;

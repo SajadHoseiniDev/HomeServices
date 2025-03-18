@@ -2,20 +2,18 @@ package nycto.homeservices.service;
 
 import lombok.RequiredArgsConstructor;
 import nycto.homeservices.dto.customerDto.CustomerCreateDto;
-import nycto.homeservices.dto.customerDto.CustomerMapper;
+import nycto.homeservices.util.dtoMapper.CustomerMapper;
 import nycto.homeservices.dto.customerDto.CustomerResponseDto;
-import nycto.homeservices.dto.userDto.UserCreateDto;
-import nycto.homeservices.dto.userDto.UserResponseDto;
 import nycto.homeservices.entity.Customer;
-import nycto.homeservices.entity.User;
 import nycto.homeservices.entity.enums.UserStatus;
 import nycto.homeservices.exceptions.DuplicateDataException;
 import nycto.homeservices.exceptions.NotValidInputException;
 import nycto.homeservices.repository.CustomerRepository;
 import nycto.homeservices.util.ValidationUtil;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-
+@Service
 @RequiredArgsConstructor
 public class CustomerService {
     private final CustomerRepository customerRepository;
