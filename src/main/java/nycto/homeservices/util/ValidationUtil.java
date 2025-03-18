@@ -2,10 +2,11 @@ package nycto.homeservices.util;
 
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
+import org.springframework.stereotype.Component;
 
 import java.util.Set;
 import java.util.stream.Collectors;
-
+@Component
 public class ValidationUtil {
     private final Validator validator;
 
