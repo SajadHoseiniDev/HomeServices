@@ -14,6 +14,9 @@ import nycto.homeservices.util.ValidationUtil;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class CustomerService {
@@ -48,6 +51,12 @@ public class CustomerService {
         Customer customer = customerRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Customer with id " + id + " not found"));
         return customerMapper.toResponseDto(customer);
+    }
+
+    public List<CustomerResponseDto> getAllCustomers() {
+        return customerRepository.findAll().stream()
+                .map(customerMapper::toResponseDto)
+                .collect(Collectors.toList());
     }
 
 

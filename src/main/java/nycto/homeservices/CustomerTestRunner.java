@@ -25,7 +25,7 @@ public class CustomerTestRunner implements CommandLineRunner {
             CustomerCreateDto createDto = new CustomerCreateDto(
                     "Mohamad",
                     "rezaei",
-                    "mmgmail.com",
+                    "mm@gmail.com",
                     "mamad123",
                     0L
             );
@@ -45,9 +45,19 @@ public class CustomerTestRunner implements CommandLineRunner {
             System.out.println("Customer found: " + customer);
 
 
-        }catch (Exception e) {
+        } catch (Exception e) {
             System.out.println("Error occurred: " + e.getMessage());
         }
+
+        try {
+            var allCustomers = customerService.getAllCustomers();
+            System.out.println("All customers: " + allCustomers);
+        } catch (Exception e) {
+            System.out.println("Error during read all: " + e.getMessage());
+        }
+
+        System.out.println("Customer Test Runner finished.");
+
 
     }
 
