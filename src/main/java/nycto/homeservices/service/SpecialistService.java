@@ -4,12 +4,15 @@ import lombok.RequiredArgsConstructor;
 import nycto.homeservices.dto.specialistDto.SpecialistCreateDto;
 import nycto.homeservices.dto.specialistDto.SpecialistResponseDto;
 import nycto.homeservices.dto.specialistDto.SpecialistUpdateDto;
+import nycto.homeservices.dto.userDto.ChangeUserPasswordDto;
 import nycto.homeservices.entity.Specialist;
+import nycto.homeservices.entity.User;
 import nycto.homeservices.entity.enums.UserStatus;
 import nycto.homeservices.exceptions.DuplicateDataException;
 import nycto.homeservices.exceptions.NotFoundException;
 import nycto.homeservices.exceptions.NotValidInputException;
 import nycto.homeservices.repository.SpecialistRepository;
+import nycto.homeservices.repository.UserRepository;
 import nycto.homeservices.util.ValidationUtil;
 import nycto.homeservices.util.dtoMapper.SpecialistMapper;
 import org.springframework.stereotype.Service;
@@ -24,6 +27,7 @@ public class SpecialistService {
     private final SpecialistRepository specialistRepository;
     private final ValidationUtil validationUtil;
     private final SpecialistMapper specialistMapper;
+    private final UserRepository userRepository;
 
     public SpecialistResponseDto createSpecialist(SpecialistCreateDto createDto)
             throws NotValidInputException, DuplicateDataException {
@@ -72,6 +76,20 @@ public class SpecialistService {
         Specialist specialist = specialistRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Specialist with id " + id + " not found"));
         specialistRepository.delete(specialist);
+    }
+
+    public void changePassword(Long id, ChangeUserPasswordDto passwordDto) throws NotFoundException, NotValidInputException {
+
+        User user = specialistRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("User with id " + id + " not found"));
+
+        if(!validationUtil.validate(passwordDto))
+            throw new NotValidInputException("Not valid specialist data");
+
+        user.setPassword(passwordDto.password());
+
+        userRepository.save(user);
+
     }
 
 }
