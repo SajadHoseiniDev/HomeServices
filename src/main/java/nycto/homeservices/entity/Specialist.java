@@ -19,7 +19,7 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Specialist extends User {
     @Column
-    int rating;
+    double rating;
 
     @Column(nullable = false)
     String profilePicUrl;
