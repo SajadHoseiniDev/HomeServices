@@ -3,9 +3,11 @@ package nycto.homeservices.service;
 import lombok.RequiredArgsConstructor;
 import nycto.homeservices.dto.specialistDto.SpecialistCreateDto;
 import nycto.homeservices.dto.specialistDto.SpecialistResponseDto;
+import nycto.homeservices.dto.specialistDto.SpecialistUpdateDto;
 import nycto.homeservices.entity.Specialist;
 import nycto.homeservices.entity.enums.UserStatus;
 import nycto.homeservices.exceptions.DuplicateDataException;
+import nycto.homeservices.exceptions.NotFoundException;
 import nycto.homeservices.exceptions.NotValidInputException;
 import nycto.homeservices.repository.SpecialistRepository;
 import nycto.homeservices.util.ValidationUtil;
@@ -13,6 +15,8 @@ import nycto.homeservices.util.dtoMapper.SpecialistMapper;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -36,6 +40,38 @@ public class SpecialistService {
 
         Specialist savedSpecialist = specialistRepository.save(specialist);
         return specialistMapper.toResponseDto(savedSpecialist);
+    }
+
+    public SpecialistResponseDto getSpecialistById(Long id) throws NotFoundException {
+        Specialist specialist = specialistRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Specialist with id " + id + " not found"));
+        return specialistMapper.toResponseDto(specialist);
+    }
+
+    public List<SpecialistResponseDto> getAllSpecialists() {
+        return specialistRepository.findAll().stream()
+                .map(specialistMapper::toResponseDto)
+                .collect(Collectors.toList());
+    }
+
+    public SpecialistResponseDto updateSpecialist(Long id, SpecialistUpdateDto updateDto)
+            throws NotFoundException, NotValidInputException {
+        Specialist existingSpecialist = specialistRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Specialist with id " + id + " not found"));
+
+        if (!validationUtil.validate(updateDto))
+            throw new NotValidInputException("Not valid update data");
+
+        Specialist updatedSpecialist = specialistMapper.toEntity(updateDto, existingSpecialist);
+        updatedSpecialist.setId(id);
+        Specialist savedSpecialist = specialistRepository.save(updatedSpecialist);
+        return specialistMapper.toResponseDto(savedSpecialist);
+    }
+
+    public void deleteSpecialist(Long id) throws NotFoundException {
+        Specialist specialist = specialistRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Specialist with id " + id + " not found"));
+        specialistRepository.delete(specialist);
     }
 
 }
