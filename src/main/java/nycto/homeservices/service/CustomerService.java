@@ -2,6 +2,7 @@ package nycto.homeservices.service;
 
 import lombok.RequiredArgsConstructor;
 import nycto.homeservices.dto.customerDto.CustomerCreateDto;
+import nycto.homeservices.dto.customerDto.CustomerUpdateDto;
 import nycto.homeservices.exceptions.NotFoundException;
 import nycto.homeservices.util.dtoMapper.CustomerMapper;
 import nycto.homeservices.dto.customerDto.CustomerResponseDto;
@@ -57,6 +58,19 @@ public class CustomerService {
         return customerRepository.findAll().stream()
                 .map(customerMapper::toResponseDto)
                 .collect(Collectors.toList());
+    }
+
+    public CustomerResponseDto updateCustomer(Long id, CustomerUpdateDto updateDto) throws NotFoundException, NotValidInputException {
+        Customer existingCustomer = customerRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Customer with id " + id + " not found"));
+
+        if (!validationUtil.validate(updateDto))
+            throw new NotValidInputException("Not valid update data");
+
+        Customer updatedCustomer = customerMapper.toEntity(updateDto, existingCustomer);
+        updatedCustomer.setId(id);
+        Customer savedCustomer = customerRepository.save(updatedCustomer);
+        return customerMapper.toResponseDto(savedCustomer);
     }
 
 

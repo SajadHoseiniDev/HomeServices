@@ -3,6 +3,8 @@ package nycto.homeservices;
 import lombok.RequiredArgsConstructor;
 
 import nycto.homeservices.dto.customerDto.CustomerCreateDto;
+import nycto.homeservices.dto.customerDto.CustomerUpdateDto;
+import nycto.homeservices.entity.enums.UserStatus;
 import nycto.homeservices.exceptions.DuplicateDataException;
 import nycto.homeservices.exceptions.NotValidInputException;
 import nycto.homeservices.service.CustomerService;
@@ -23,10 +25,10 @@ public class CustomerTestRunner implements CommandLineRunner {
 
         try {
             CustomerCreateDto createDto = new CustomerCreateDto(
-                    "Mohamad",
-                    "rezaei",
-                    "mm@gmail.com",
-                    "mamad123",
+                    "Reza",
+                    "Davodi",
+                    "reza@gmail.com",
+                    "reza123",
                     0L
             );
 
@@ -56,7 +58,28 @@ public class CustomerTestRunner implements CommandLineRunner {
             System.out.println("Error during read all: " + e.getMessage());
         }
 
+        try {
+            CustomerUpdateDto updateDto = new CustomerUpdateDto(
+                    "SajadUp ",
+                    "HoseiniUp ",
+                    "nyctoxr@example.com",
+                    UserStatus.APPROVED,
+                    1500L
+            );
+            var updatedCustomer = customerService.updateCustomer(1L, updateDto);
+            System.out.println("Customer updated successfully: " + updatedCustomer);
+
+        }catch (Exception e) {
+            System.out.println("Error occurred: " + e.getMessage());
+        }
+
+
+
+
+
         System.out.println("Customer Test Runner finished.");
+
+
 
 
     }
