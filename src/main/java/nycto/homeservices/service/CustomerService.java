@@ -2,6 +2,7 @@ package nycto.homeservices.service;
 
 import lombok.RequiredArgsConstructor;
 import nycto.homeservices.dto.customerDto.CustomerCreateDto;
+import nycto.homeservices.exceptions.NotFoundException;
 import nycto.homeservices.util.dtoMapper.CustomerMapper;
 import nycto.homeservices.dto.customerDto.CustomerResponseDto;
 import nycto.homeservices.entity.Customer;
@@ -42,6 +43,14 @@ public class CustomerService {
         return customerMapper.toResponseDto(savedCustomer);
 
     }
+
+    public CustomerResponseDto getCustomerById(Long id) throws NotFoundException {
+        Customer customer = customerRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Customer with id " + id + " not found"));
+        return customerMapper.toResponseDto(customer);
+    }
+
+
 
 
 }
