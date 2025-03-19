@@ -73,6 +73,12 @@ public class CustomerService {
         return customerMapper.toResponseDto(savedCustomer);
     }
 
+    public void deleteCustomer(Long id) throws NotFoundException {
+        Customer customer = customerRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Customer with id " + id + " not found"));
+        customerRepository.delete(customer);
+    }
+
 
 
 

@@ -25,10 +25,10 @@ public class CustomerTestRunner implements CommandLineRunner {
 
         try {
             CustomerCreateDto createDto = new CustomerCreateDto(
-                    "Reza",
-                    "Davodi",
-                    "reza@gmail.com",
-                    "reza123",
+                    "Sina",
+                    "Asadi",
+                    "sina@gmail.com",
+                    "sina123",
                     0L
             );
 
@@ -58,19 +58,27 @@ public class CustomerTestRunner implements CommandLineRunner {
             System.out.println("Error during read all: " + e.getMessage());
         }
 
-        try {
-            CustomerUpdateDto updateDto = new CustomerUpdateDto(
-                    "SajadUp ",
-                    "HoseiniUp ",
-                    "nyctoxr@example.com",
-                    UserStatus.APPROVED,
-                    1500L
-            );
-            var updatedCustomer = customerService.updateCustomer(1L, updateDto);
-            System.out.println("Customer updated successfully: " + updatedCustomer);
+//        try {
+//            CustomerUpdateDto updateDto = new CustomerUpdateDto(
+//                    "SajadUp ",
+//                    "HoseiniUp ",
+//                    "nyctoxr@example.com",
+//                    UserStatus.APPROVED,
+//                    1500L
+//            );
+//            var updatedCustomer = customerService.updateCustomer(1L, updateDto);
+//            System.out.println("Customer updated successfully: " + updatedCustomer);
+//
+//        }catch (Exception e) {
+//            System.out.println("Error occurred: " + e.getMessage());
+//        }
 
-        }catch (Exception e) {
-            System.out.println("Error occurred: " + e.getMessage());
+
+        try {
+            customerService.deleteCustomer(1L);
+            System.out.println("Customer deleted successfully");
+        } catch (Exception e) {
+            System.out.println("Error during delete: " + e.getMessage());
         }
 
 
