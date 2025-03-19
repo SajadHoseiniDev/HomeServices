@@ -1,6 +1,7 @@
 package nycto.homeservices.service;
 
 import lombok.RequiredArgsConstructor;
+import nycto.homeservices.dto.userDto.ChangeUserPasswordDto;
 import nycto.homeservices.dto.userDto.UserCreateDto;
 import nycto.homeservices.dto.userDto.UserUpdateDto;
 import nycto.homeservices.exceptions.NotFoundException;
@@ -81,6 +82,20 @@ public class UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("User with id " + id + " not found"));
         userRepository.delete(user);
+    }
+
+    public void changePassword(Long id, ChangeUserPasswordDto passwordDto) throws NotFoundException, NotValidInputException {
+
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("User with id " + id + " not found"));
+
+        if(!validationUtil.validate(passwordDto))
+            throw new NotValidInputException("Not valid specialist data");
+
+        user.setPassword(passwordDto.password());
+
+        userRepository.save(user);
+
     }
 
 

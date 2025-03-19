@@ -13,6 +13,4 @@ public record SpecialistCreateDto(
 
         @NotEmpty(message = "profilePicUrl can't be empty!") String profilePicUrl
 
-) {
-
-}
+) { }

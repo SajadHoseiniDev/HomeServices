@@ -27,7 +27,7 @@ public class SpecialistService {
     private final SpecialistRepository specialistRepository;
     private final ValidationUtil validationUtil;
     private final SpecialistMapper specialistMapper;
-    private final UserRepository userRepository;
+
 
     public SpecialistResponseDto createSpecialist(SpecialistCreateDto createDto)
             throws NotValidInputException, DuplicateDataException {
@@ -78,18 +78,5 @@ public class SpecialistService {
         specialistRepository.delete(specialist);
     }
 
-    public void changePassword(Long id, ChangeUserPasswordDto passwordDto) throws NotFoundException, NotValidInputException {
-
-        User user = specialistRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("User with id " + id + " not found"));
-
-        if(!validationUtil.validate(passwordDto))
-            throw new NotValidInputException("Not valid specialist data");
-
-        user.setPassword(passwordDto.password());
-
-        userRepository.save(user);
-
-    }
 
 }
