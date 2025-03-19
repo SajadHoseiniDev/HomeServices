@@ -2,6 +2,8 @@ package nycto.homeservices.service;
 
 import lombok.RequiredArgsConstructor;
 import nycto.homeservices.dto.userDto.UserCreateDto;
+import nycto.homeservices.dto.userDto.UserUpdateDto;
+import nycto.homeservices.exceptions.NotFoundException;
 import nycto.homeservices.util.dtoMapper.UserMapper;
 import nycto.homeservices.dto.userDto.UserResponseDto;
 import nycto.homeservices.entity.User;
@@ -13,6 +15,8 @@ import nycto.homeservices.util.ValidationUtil;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -41,6 +45,42 @@ public class UserService {
 
         return userMapper.toResponseDto(savedUser);
 
+    }
+
+
+    public UserResponseDto getUserById(Long id) throws NotFoundException {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("User with id " + id + " not found"));
+        return userMapper.toResponseDto(user);
+    }
+
+
+    public List<UserResponseDto> getAllUsers() {
+        return userRepository.findAll().stream()
+                .map(userMapper::toResponseDto)
+                .collect(Collectors.toList());
+    }
+
+
+    public UserResponseDto updateUser(Long id, UserUpdateDto updateDto)
+            throws NotFoundException, NotValidInputException {
+        User existingUser = userRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("User with id " + id + " not found"));
+
+        if (!validationUtil.validate(updateDto))
+            throw new NotValidInputException("Not valid update data");
+
+        User updatedUser = userMapper.toEntity(updateDto, existingUser);
+        updatedUser.setId(id);
+        User savedUser = userRepository.save(updatedUser);
+        return userMapper.toResponseDto(savedUser);
+    }
+
+
+    public void deleteUser(Long id) throws NotFoundException {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("User with id " + id + " not found"));
+        userRepository.delete(user);
     }
 
 
