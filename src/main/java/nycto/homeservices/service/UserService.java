@@ -1,12 +1,9 @@
 package nycto.homeservices.service;
 
 import lombok.RequiredArgsConstructor;
-import nycto.homeservices.dto.userDto.ChangeUserPasswordDto;
-import nycto.homeservices.dto.userDto.UserCreateDto;
-import nycto.homeservices.dto.userDto.UserUpdateDto;
+import nycto.homeservices.dto.userDto.*;
 import nycto.homeservices.exceptions.NotFoundException;
 import nycto.homeservices.util.dtoMapper.UserMapper;
-import nycto.homeservices.dto.userDto.UserResponseDto;
 import nycto.homeservices.entity.User;
 import nycto.homeservices.entity.enums.UserStatus;
 import nycto.homeservices.exceptions.DuplicateDataException;
@@ -38,7 +35,7 @@ public class UserService {
                             + "is already exists");
 
 
-        User user =userMapper.toEntity(createDto);
+        User user = userMapper.toEntity(createDto);
         user.setRegistrationDate(LocalDateTime.now());
         user.setStatus(UserStatus.NEW);
 
@@ -89,7 +86,7 @@ public class UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("User with id " + id + " not found"));
 
-        if(!validationUtil.validate(passwordDto))
+        if (!validationUtil.validate(passwordDto))
             throw new NotValidInputException("Not valid specialist data");
 
         user.setPassword(passwordDto.password());
@@ -98,6 +95,16 @@ public class UserService {
 
     }
 
+    public List<UserResponseDto> getUsersByFilter(FilteringDto filterParams) {
+        List<User> users = userRepository.findByFirstNameContainingIgnoreCaseAndLastNameContainingIgnoreCaseAndEmailContainingIgnoreCaseAndUserType(
+                filterParams.firstName(),
+                filterParams.lastName(),
+                filterParams.email(),
+                filterParams.userType()
+        );
+        return users.stream().map(userMapper::toResponseDto).collect(Collectors.toList());
+
+    }
 
 
 }
