@@ -96,14 +96,16 @@ public class UserService {
     }
 
     public List<UserResponseDto> getUsersByFilter(FilteringDto filterParams) {
-        List<User> users = userRepository.findByFirstNameContainingIgnoreCaseAndLastNameContainingIgnoreCaseAndEmailContainingIgnoreCaseAndUserType(
+        List<User> users = userRepository.findUsersByFilters(
                 filterParams.firstName(),
                 filterParams.lastName(),
                 filterParams.email(),
-                filterParams.userType()
+                filterParams.userType(),
+                filterParams.serviceName()
         );
-        return users.stream().map(userMapper::toResponseDto).collect(Collectors.toList());
-
+        return users.stream()
+                .map(userMapper::toResponseDto)
+                .collect(Collectors.toList());
     }
 
 
