@@ -1,11 +1,14 @@
 package nycto.homeservices;
 
 import lombok.RequiredArgsConstructor;
+import nycto.homeservices.dto.serviceDto.ServiceCreateDto;
 import nycto.homeservices.dto.specialistDto.SpecialistCreateDto;
 import nycto.homeservices.dto.userDto.ChangeUserPasswordDto;
+import nycto.homeservices.entity.Service;
 import nycto.homeservices.exceptions.DuplicateDataException;
 import nycto.homeservices.exceptions.NotValidInputException;
 import nycto.homeservices.service.CustomerService;
+import nycto.homeservices.service.ServiceService;
 import nycto.homeservices.service.SpecialistService;
 import nycto.homeservices.service.UserService;
 import org.springframework.boot.CommandLineRunner;
@@ -19,6 +22,7 @@ public class TestRunner implements CommandLineRunner {
     private final CustomerService customerService;
     private final SpecialistService specialistService;
     private final UserService userService;
+    private final ServiceService serviceService;
 
 
     @Override
@@ -26,11 +30,11 @@ public class TestRunner implements CommandLineRunner {
 
         try {
             SpecialistCreateDto newSpecialist = new SpecialistCreateDto(
-                    "Sajad",
-                    "Hoseini",
-                    "nyctoxr@gmail.com",
-                    "sajad123",
-                    "\"E:\\MaktabSharif\\FinalProject\\HomeService\\asset\\505.jpg\""
+                    "Reza",
+                    "Golestani",
+                    "reza@gmail.com",
+                    "reza123",
+                    "\"E:\\MaktabSharif\\FinalProject\\HomeService\\asset\\RadioHead.jpg\""
             );
 
 
@@ -43,10 +47,13 @@ public class TestRunner implements CommandLineRunner {
         }
 
         try {
+            ServiceCreateDto newService = new ServiceCreateDto(
+                    "Home Appliance"
 
-            ChangeUserPasswordDto newPassword = new ChangeUserPasswordDto("sajad123");
-            userService.changePassword(2L, newPassword);
-            System.out.println("Password changed successfully for user with id 1");
+            );
+            var result = serviceService.createService(newService);
+            System.out.println("service created successfully: " + result);
+
         } catch (Exception e) {
             System.out.println("Error during change password: " + e.getMessage());
         }
