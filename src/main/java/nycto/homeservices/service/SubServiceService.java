@@ -15,7 +15,7 @@ import nycto.homeservices.util.dtoMapper.SubServiceMapper;
 import java.util.List;
 import java.util.stream.Collectors;
 
-
+@org.springframework.stereotype.Service
 @RequiredArgsConstructor
 public class SubServiceService {
     private final SubServiceRepository subServiceRepository;

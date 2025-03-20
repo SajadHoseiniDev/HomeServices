@@ -2,13 +2,19 @@ package nycto.homeservices;
 
 import lombok.RequiredArgsConstructor;
 import nycto.homeservices.dto.serviceDto.ServiceCreateDto;
+import nycto.homeservices.dto.serviceDto.ServiceResponseDto;
 import nycto.homeservices.dto.specialistDto.SpecialistCreateDto;
+import nycto.homeservices.dto.specialistDto.SpecialistResponseDto;
+import nycto.homeservices.dto.subService.SubServiceCreateDto;
+import nycto.homeservices.entity.Service;
 import nycto.homeservices.exceptions.DuplicateDataException;
 import nycto.homeservices.exceptions.NotValidInputException;
 import nycto.homeservices.service.CustomerService;
 import nycto.homeservices.service.ServiceService;
+import nycto.homeservices.service.SubServiceService;
 import nycto.homeservices.service.UserService;
 import nycto.homeservices.service.serviceInterface.SpecialistService;
+import nycto.homeservices.util.dtoMapper.ServiceMapper;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
@@ -21,18 +27,22 @@ public class TestRunner implements CommandLineRunner {
     private final SpecialistService specialistService;
     private final UserService userService;
     private final ServiceService serviceService;
+    private final SubServiceService subServiceService;
+    private final ServiceMapper serviceMapper;
 
 
     @Override
     public void run(String... args) {
 
+
+
         try {
             SpecialistCreateDto newSpecialist = new SpecialistCreateDto(
-                    "Reza",
-                    "Golestani",
-                    "reza@gmail.com",
-                    "reza123",
-                    "\"E:\\MaktabSharif\\FinalProject\\HomeService\\asset\\RadioHead.jpg\""
+                    "Raouf",
+                    "Shamsi",
+                    "shamsi@gmail.com",
+                    "raouf123",
+                    "\"E:\\MaktabSharif\\FinalProject\\HomeService\\asset\\download.jpg\""
             );
 
 
@@ -43,18 +53,18 @@ public class TestRunner implements CommandLineRunner {
             System.out.println("Error occurred: " + e.getMessage());
 
         }
-
-        try {
-            ServiceCreateDto newService = new ServiceCreateDto(
-                    "Home Appliance"
-
-            );
-            var result = serviceService.createService(newService);
-            System.out.println("service created successfully: " + result);
-
-        } catch (Exception e) {
-            System.out.println("Error during change password: " + e.getMessage());
-        }
+//
+//        try {
+//            ServiceCreateDto newService = new ServiceCreateDto(
+//                    "Home Appliance"
+//
+//            );
+//            var result = serviceService.createService(newService);
+//            System.out.println("service created successfully: " + result);
+//
+//        } catch (Exception e) {
+//            System.out.println("Error during change password: " + e.getMessage());
+//        }
 
 //
 //        try {

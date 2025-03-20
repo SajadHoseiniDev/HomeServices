@@ -29,4 +29,6 @@ public interface SpecialistService {
 
     void removeServiceFromSpecialist(Long specialistId, nycto.homeservices.entity.Service service)
             throws NotFoundException;
+
+    List<SpecialistResponseDto> getSpecialistsByService(nycto.homeservices.entity.Service service) throws NotFoundException;
 }

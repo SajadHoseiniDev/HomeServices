@@ -4,13 +4,14 @@ import lombok.RequiredArgsConstructor;
 import nycto.homeservices.dto.serviceDto.ServiceCreateDto;
 import nycto.homeservices.dto.serviceDto.ServiceResponseDto;
 import nycto.homeservices.dto.serviceDto.ServiceUpdateDto;
+import nycto.homeservices.entity.Service;
+import nycto.homeservices.entity.Specialist;
 import nycto.homeservices.exceptions.DuplicateDataException;
 import nycto.homeservices.exceptions.NotFoundException;
 import nycto.homeservices.exceptions.NotValidInputException;
 import nycto.homeservices.repository.ServiceRepository;
 import nycto.homeservices.util.ValidationUtil;
 import nycto.homeservices.util.dtoMapper.ServiceMapper;
-import nycto.homeservices.entity.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -76,6 +77,7 @@ public class ServiceService {
 
         serviceRepository.delete(service);
     }
+
 
 
 }
