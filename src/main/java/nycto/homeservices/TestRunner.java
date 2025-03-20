@@ -3,14 +3,12 @@ package nycto.homeservices;
 import lombok.RequiredArgsConstructor;
 import nycto.homeservices.dto.serviceDto.ServiceCreateDto;
 import nycto.homeservices.dto.specialistDto.SpecialistCreateDto;
-import nycto.homeservices.dto.userDto.ChangeUserPasswordDto;
-import nycto.homeservices.entity.Service;
 import nycto.homeservices.exceptions.DuplicateDataException;
 import nycto.homeservices.exceptions.NotValidInputException;
 import nycto.homeservices.service.CustomerService;
 import nycto.homeservices.service.ServiceService;
-import nycto.homeservices.service.SpecialistService;
 import nycto.homeservices.service.UserService;
+import nycto.homeservices.service.serviceInterface.SpecialistService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 

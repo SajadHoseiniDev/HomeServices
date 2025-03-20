@@ -4,15 +4,13 @@ import lombok.RequiredArgsConstructor;
 import nycto.homeservices.dto.specialistDto.SpecialistCreateDto;
 import nycto.homeservices.dto.specialistDto.SpecialistResponseDto;
 import nycto.homeservices.dto.specialistDto.SpecialistUpdateDto;
-import nycto.homeservices.dto.userDto.ChangeUserPasswordDto;
 import nycto.homeservices.entity.Specialist;
-import nycto.homeservices.entity.User;
 import nycto.homeservices.entity.enums.UserStatus;
 import nycto.homeservices.exceptions.DuplicateDataException;
 import nycto.homeservices.exceptions.NotFoundException;
 import nycto.homeservices.exceptions.NotValidInputException;
 import nycto.homeservices.repository.SpecialistRepository;
-import nycto.homeservices.repository.UserRepository;
+import nycto.homeservices.service.serviceInterface.SpecialistService;
 import nycto.homeservices.util.ValidationUtil;
 import nycto.homeservices.util.dtoMapper.SpecialistMapper;
 import org.springframework.stereotype.Service;
@@ -23,12 +21,13 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class SpecialistService {
+public class SpecialistServiceImpl implements SpecialistService {
     private final SpecialistRepository specialistRepository;
     private final ValidationUtil validationUtil;
     private final SpecialistMapper specialistMapper;
 
 
+    @Override
     public SpecialistResponseDto createSpecialist(SpecialistCreateDto createDto)
             throws NotValidInputException, DuplicateDataException {
         if (!validationUtil.validate(createDto))
@@ -46,12 +45,14 @@ public class SpecialistService {
         return specialistMapper.toResponseDto(savedSpecialist);
     }
 
+    @Override
     public SpecialistResponseDto getSpecialistById(Long id) throws NotFoundException {
         Specialist specialist = specialistRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Specialist with id " + id + " not found"));
         return specialistMapper.toResponseDto(specialist);
     }
 
+    @Override
     public List<SpecialistResponseDto> getAllSpecialists() {
 
         return specialistRepository.findAll().stream()
@@ -60,6 +61,7 @@ public class SpecialistService {
     }
 
 
+    @Override
     public SpecialistResponseDto updateSpecialist(Long id, SpecialistUpdateDto updateDto)
             throws NotFoundException, NotValidInputException {
 
@@ -76,10 +78,21 @@ public class SpecialistService {
         return specialistMapper.toResponseDto(specialistRepository.save(updatedSpecialist));
     }
 
+    @Override
     public void deleteSpecialist(Long id) throws NotFoundException {
         Specialist specialist = specialistRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Specialist with id " + id + " not found"));
         specialistRepository.delete(specialist);
+    }
+
+
+    @Override
+    public void addServiceToSpecialist(Long specialistId, nycto.homeservices.entity.Service service) throws NotFoundException {
+        Specialist specialist = specialistRepository.findById(specialistId)
+                .orElseThrow(() -> new NotFoundException("Specialist with id " + specialistId + " not found"));
+
+        specialist.getServices().add(service);
+        specialistRepository.save(specialist);
     }
 
 

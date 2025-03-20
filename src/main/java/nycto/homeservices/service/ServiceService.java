@@ -14,8 +14,7 @@ import nycto.homeservices.entity.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
-
-
+@org.springframework.stereotype.Service
 @RequiredArgsConstructor
 public class ServiceService {
 
