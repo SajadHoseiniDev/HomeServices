@@ -29,7 +29,8 @@ public class ServiceService {
             throw new NotValidInputException("Not valid service data");
 
         if (serviceRepository.findByName(createDto.name()).isPresent())
-            throw new DuplicateDataException("Service with name: " + createDto.name() + " already exists");
+            throw new DuplicateDataException("Service with name: "
+                    + createDto.name() + " already exists");
 
         nycto.homeservices.entity.Service service = serviceMapper.toEntity(createDto);
         nycto.homeservices.entity.Service savedService = serviceRepository.save(service);
@@ -38,7 +39,9 @@ public class ServiceService {
 
     public ServiceResponseDto getServiceById(Long id) throws NotFoundException {
         nycto.homeservices.entity.Service service = serviceRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Service with id " + id + " not found"));
+                .orElseThrow(() -> new NotFoundException("Service with id "
+                        + id + " not found"));
+
         return serviceMapper.toResponseDto(service);
     }
 
@@ -47,13 +50,15 @@ public class ServiceService {
                 .map(serviceMapper::toResponseDto)
                 .collect(Collectors.toList());
     }
+
     public ServiceResponseDto updateService(Long id, ServiceUpdateDto updateDto)
             throws NotFoundException, NotValidInputException {
 
         nycto.homeservices.entity.Service excitingService = serviceRepository.findById(id)
-                .orElseThrow(()->new NotFoundException("Service with id " + id + " not found"));
+                .orElseThrow(() -> new NotFoundException("Service with id "
+                        + id + " not found"));
 
-        if(!validationUtil.validate(updateDto))
+        if (!validationUtil.validate(updateDto))
             throw new NotValidInputException("Not valid service data");
 
         nycto.homeservices.entity.Service updatedService = serviceMapper
@@ -64,8 +69,13 @@ public class ServiceService {
         return serviceMapper.toResponseDto(serviceRepository.save(updatedService));
     }
 
+    public void deleteService(Long id) throws NotFoundException {
+        nycto.homeservices.entity.Service service = serviceRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Service with id "
+                        + id + " not found"));
 
-
+        serviceRepository.delete(service);
+    }
 
 
 }
