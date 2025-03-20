@@ -10,12 +10,12 @@ import nycto.homeservices.exceptions.NotValidInputException;
 import nycto.homeservices.repository.ServiceRepository;
 import nycto.homeservices.util.ValidationUtil;
 import nycto.homeservices.util.dtoMapper.ServiceMapper;
-import org.springframework.stereotype.Service;
+import nycto.homeservices.entity.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Service
+
 @RequiredArgsConstructor
 public class ServiceService {
 
@@ -32,13 +32,13 @@ public class ServiceService {
             throw new DuplicateDataException("Service with name: "
                     + createDto.name() + " already exists");
 
-        nycto.homeservices.entity.Service service = serviceMapper.toEntity(createDto);
-        nycto.homeservices.entity.Service savedService = serviceRepository.save(service);
+        Service service = serviceMapper.toEntity(createDto);
+        Service savedService = serviceRepository.save(service);
         return serviceMapper.toResponseDto(savedService);
     }
 
     public ServiceResponseDto getServiceById(Long id) throws NotFoundException {
-        nycto.homeservices.entity.Service service = serviceRepository.findById(id)
+        Service service = serviceRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Service with id "
                         + id + " not found"));
 
@@ -54,23 +54,24 @@ public class ServiceService {
     public ServiceResponseDto updateService(Long id, ServiceUpdateDto updateDto)
             throws NotFoundException, NotValidInputException {
 
-        nycto.homeservices.entity.Service excitingService = serviceRepository.findById(id)
+        Service existingService = serviceRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Service with id "
                         + id + " not found"));
 
         if (!validationUtil.validate(updateDto))
             throw new NotValidInputException("Not valid service data");
 
-        nycto.homeservices.entity.Service updatedService = serviceMapper
-                .toEntity(updateDto, excitingService);
+        Service updatedService = serviceMapper
+                .toEntity(updateDto, existingService);
 
         updatedService.setId(id);
 
-        return serviceMapper.toResponseDto(serviceRepository.save(updatedService));
+        return serviceMapper
+                .toResponseDto(serviceRepository.save(updatedService));
     }
 
     public void deleteService(Long id) throws NotFoundException {
-        nycto.homeservices.entity.Service service = serviceRepository.findById(id)
+        Service service = serviceRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Service with id "
                         + id + " not found"));
 

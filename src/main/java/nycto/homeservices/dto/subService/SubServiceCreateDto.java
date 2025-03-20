@@ -15,8 +15,6 @@ public record SubServiceCreateDto(
         Long basePrice,
 
         @Size(max = 255, message = "description can't be longer than 255 characters!")
-        String description,
+        String description
 
-        @NotNull(message = "serviceId can't be null!")
-        Long serviceId
 ) { }
