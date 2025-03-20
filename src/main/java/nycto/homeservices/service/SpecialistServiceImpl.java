@@ -25,6 +25,7 @@ public class SpecialistServiceImpl implements SpecialistService {
     private final SpecialistRepository specialistRepository;
     private final ValidationUtil validationUtil;
     private final SpecialistMapper specialistMapper;
+    private final ServiceService serviceService;
 
 
     @Override
@@ -92,6 +93,24 @@ public class SpecialistServiceImpl implements SpecialistService {
                 .orElseThrow(() -> new NotFoundException("Specialist with id " + specialistId + " not found"));
 
         specialist.getServices().add(service);
+        specialistRepository.save(specialist);
+    }
+
+    @Override
+    public void removeServiceFromSpecialist(Long specialistId, nycto.homeservices.entity.Service service)
+            throws NotFoundException {
+
+        Specialist specialist = specialistRepository.findById(specialistId)
+                .orElseThrow(() -> new NotFoundException("Specialist with id "
+                        + specialistId + " not found"));
+
+
+        if (!specialist.getServices().contains(service)) {
+            throw new NotFoundException("Service not found in specialist's services");
+        }
+
+
+        specialist.getServices().remove(service);
         specialistRepository.save(specialist);
     }
 

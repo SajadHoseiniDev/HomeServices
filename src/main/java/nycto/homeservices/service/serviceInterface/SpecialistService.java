@@ -26,4 +26,7 @@ public interface SpecialistService {
 
 
     void addServiceToSpecialist(Long specialistId, nycto.homeservices.entity.Service service) throws NotFoundException;
+
+    void removeServiceFromSpecialist(Long specialistId, nycto.homeservices.entity.Service service)
+            throws NotFoundException;
 }
