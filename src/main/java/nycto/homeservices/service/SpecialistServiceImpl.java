@@ -25,7 +25,7 @@ public class SpecialistServiceImpl implements SpecialistService {
     private final SpecialistRepository specialistRepository;
     private final ValidationUtil validationUtil;
     private final SpecialistMapper specialistMapper;
-    private final ServiceService serviceService;
+
 
 
     @Override
@@ -112,6 +112,17 @@ public class SpecialistServiceImpl implements SpecialistService {
 
         specialist.getServices().remove(service);
         specialistRepository.save(specialist);
+    }
+
+    @Override
+    public List<SpecialistResponseDto> getSpecialistsByService(nycto.homeservices.entity.Service service) throws NotFoundException {
+        if (service == null) {
+            throw new NotFoundException("Service not found");
+        }
+
+        return service.getSpecialists().stream()
+                .map(specialistMapper::toResponseDto)
+                .collect(Collectors.toList());
     }
 
 
