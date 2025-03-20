@@ -1,0 +1,62 @@
+package nycto.homeservices.service;
+
+import lombok.RequiredArgsConstructor;
+import nycto.homeservices.dto.proposalDto.ProposalCreateDto;
+import nycto.homeservices.dto.proposalDto.ProposalResponseDto;
+import nycto.homeservices.entity.Order;
+import nycto.homeservices.entity.Proposal;
+import nycto.homeservices.entity.Specialist;
+import nycto.homeservices.entity.enums.OrderStatus;
+import nycto.homeservices.exceptions.NotFoundException;
+import nycto.homeservices.exceptions.NotValidInputException;
+import nycto.homeservices.repository.OrderRepository;
+import nycto.homeservices.repository.ProposalRepository;
+import nycto.homeservices.repository.SpecialistRepository;
+import nycto.homeservices.util.ValidationUtil;
+import nycto.homeservices.util.dtoMapper.ProposalMapper;
+import org.springframework.stereotype.Service;
+
+@Service
+@RequiredArgsConstructor
+public class ProposalServiceImpl {
+    private final ProposalRepository proposalRepository;
+    private final ProposalMapper proposalMapper;
+    private final ValidationUtil validationUtil;
+
+    private final SpecialistRepository specialistRepository;
+    private final OrderRepository orderRepository;
+
+    public ProposalResponseDto createProposal(ProposalCreateDto createDto, Long specialistId)
+            throws NotValidInputException, NotFoundException {
+        if (!validationUtil.validate(createDto)) {
+            throw new NotValidInputException("Not valid proposal data");
+        }
+
+        Specialist specialist = specialistRepository.findById(specialistId)
+                .orElseThrow(() -> new NotFoundException("Specialist with id "
+                        + specialistId + " not found"));
+
+        Order order = orderRepository.findById(createDto.orderId())
+                .orElseThrow(() -> new NotFoundException("Order with id "
+                        + createDto.orderId() + " not found"));
+
+
+        if (order.getStatus() != OrderStatus.WAITING_PROPOSALS) {
+            throw new NotValidInputException("Order is not waiting for a new proposal!");
+        }
+
+
+        if (!specialist.getServices().contains(order.getSubService().getService())) {
+            throw new NotValidInputException
+                    ("You can't create a proposal for this service!"+order.getSubService().getService());
+        }
+
+        Proposal proposal = proposalMapper.toEntity(createDto);
+        proposal.setSpecialist(specialist);
+        proposal.setOrder(order);
+
+        Proposal savedProposal = proposalRepository.save(proposal);
+        return proposalMapper.toResponseDto(savedProposal);
+    }
+
+}

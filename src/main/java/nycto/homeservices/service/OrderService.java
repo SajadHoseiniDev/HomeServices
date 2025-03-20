@@ -27,16 +27,19 @@ public class OrderService {
     private final CustomerRepository customerRepository;
     private final SubServiceRepository subServiceRepository;
 
-    public OrderResponseDto createOrder(OrderCreateDto createDto, Long customerId) throws NotValidInputException, NotFoundException {
+    public OrderResponseDto createOrder(OrderCreateDto createDto, Long customerId)
+            throws NotValidInputException, NotFoundException {
         if (!validationUtil.validate(createDto)) {
             throw new NotValidInputException("Not valid order data");
         }
 
         Customer customer = customerRepository.findById(customerId)
-                .orElseThrow(() -> new NotFoundException("Customer with id " + customerId + " not found"));
+                .orElseThrow(() -> new NotFoundException("Customer with id "
+                        + customerId + " not found"));
 
         SubService subService = subServiceRepository.findById(createDto.subServiceId())
-                .orElseThrow(() -> new NotFoundException("SubService with id " + createDto.subServiceId() + " not found"));
+                .orElseThrow(() -> new NotFoundException("SubService with id "
+                        + createDto.subServiceId() + " not found"));
 
         Order order = orderMapper.toEntity(createDto);
         order.setCustomer(customer);
