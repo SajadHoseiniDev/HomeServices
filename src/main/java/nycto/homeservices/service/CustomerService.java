@@ -68,9 +68,10 @@ public class CustomerService {
             throw new NotValidInputException("Not valid update data");
 
         Customer updatedCustomer = customerMapper.toEntity(updateDto, existingCustomer);
+
         updatedCustomer.setId(id);
-        Customer savedCustomer = customerRepository.save(updatedCustomer);
-        return customerMapper.toResponseDto(savedCustomer);
+
+        return customerMapper.toResponseDto(customerRepository.save(updatedCustomer));
     }
 
     public void deleteCustomer(Long id) throws NotFoundException {

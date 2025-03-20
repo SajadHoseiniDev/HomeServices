@@ -3,6 +3,7 @@ package nycto.homeservices.service;
 import lombok.RequiredArgsConstructor;
 import nycto.homeservices.dto.serviceDto.ServiceCreateDto;
 import nycto.homeservices.dto.serviceDto.ServiceResponseDto;
+import nycto.homeservices.dto.serviceDto.ServiceUpdateDto;
 import nycto.homeservices.exceptions.DuplicateDataException;
 import nycto.homeservices.exceptions.NotFoundException;
 import nycto.homeservices.exceptions.NotValidInputException;
@@ -46,6 +47,23 @@ public class ServiceService {
                 .map(serviceMapper::toResponseDto)
                 .collect(Collectors.toList());
     }
+    public ServiceResponseDto updateService(Long id, ServiceUpdateDto updateDto)
+            throws NotFoundException, NotValidInputException {
+
+        nycto.homeservices.entity.Service excitingService = serviceRepository.findById(id)
+                .orElseThrow(()->new NotFoundException("Service with id " + id + " not found"));
+
+        if(!validationUtil.validate(updateDto))
+            throw new NotValidInputException("Not valid service data");
+
+        nycto.homeservices.entity.Service updatedService = serviceMapper
+                .toEntity(updateDto, excitingService);
+
+        updatedService.setId(id);
+
+        return serviceMapper.toResponseDto(serviceRepository.save(updatedService));
+    }
+
 
 
 

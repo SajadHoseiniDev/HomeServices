@@ -69,9 +69,10 @@ public class UserService {
             throw new NotValidInputException("Not valid update data");
 
         User updatedUser = userMapper.toEntity(updateDto, existingUser);
+
         updatedUser.setId(id);
-        User savedUser = userRepository.save(updatedUser);
-        return userMapper.toResponseDto(savedUser);
+
+        return userMapper.toResponseDto(userRepository.save(updatedUser));
     }
 
 

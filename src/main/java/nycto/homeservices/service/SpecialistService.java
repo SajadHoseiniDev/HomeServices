@@ -53,13 +53,16 @@ public class SpecialistService {
     }
 
     public List<SpecialistResponseDto> getAllSpecialists() {
+
         return specialistRepository.findAll().stream()
                 .map(specialistMapper::toResponseDto)
                 .collect(Collectors.toList());
     }
 
+
     public SpecialistResponseDto updateSpecialist(Long id, SpecialistUpdateDto updateDto)
             throws NotFoundException, NotValidInputException {
+
         Specialist existingSpecialist = specialistRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Specialist with id " + id + " not found"));
 
@@ -67,9 +70,10 @@ public class SpecialistService {
             throw new NotValidInputException("Not valid update data");
 
         Specialist updatedSpecialist = specialistMapper.toEntity(updateDto, existingSpecialist);
+
         updatedSpecialist.setId(id);
-        Specialist savedSpecialist = specialistRepository.save(updatedSpecialist);
-        return specialistMapper.toResponseDto(savedSpecialist);
+
+        return specialistMapper.toResponseDto(specialistRepository.save(updatedSpecialist));
     }
 
     public void deleteSpecialist(Long id) throws NotFoundException {
