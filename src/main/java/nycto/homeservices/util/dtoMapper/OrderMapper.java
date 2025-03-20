@@ -3,7 +3,9 @@ package nycto.homeservices.util.dtoMapper;
 import nycto.homeservices.dto.orderDto.OrderCreateDto;
 import nycto.homeservices.dto.orderDto.OrderResponseDto;
 import nycto.homeservices.entity.Order;
+import org.springframework.stereotype.Component;
 
+@Component
 public class OrderMapper {
 
     public Order toEntity(OrderCreateDto createDto) {
