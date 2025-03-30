@@ -30,5 +30,26 @@ public class CustomerCreditServiceImpl implements CustomerCreditService {
         customerCreditRepository.save(credit);
     }
 
+    @Override
+    public void decreaseCustomerCredit(Customer customer, Long amount) throws NotFoundException, CreditException {
+        if (customer == null) {
+            throw new NotFoundException("Customer not found");
+        }
+        if (amount == null || amount <= 0) {
+            throw new CreditException("Amount must be more than 0");
+        }
+
+        Long totalCredit = customerCreditRepository.findTotalCreditByCustomerId(customer.getId());
+        if (totalCredit == null || totalCredit < amount) {
+            throw new CreditException("Insufficient credit");
+        }
+
+        CustomerCredit credit = new CustomerCredit();
+        credit.setCustomer(customer);
+        credit.setAmount(-amount);
+
+        customerCreditRepository.save(credit);
+    }
+
 
 }
