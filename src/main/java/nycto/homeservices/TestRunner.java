@@ -1,17 +1,12 @@
 package nycto.homeservices;
 
 import lombok.RequiredArgsConstructor;
-import nycto.homeservices.dto.serviceDto.ServiceCreateDto;
-import nycto.homeservices.dto.serviceDto.ServiceResponseDto;
 import nycto.homeservices.dto.specialistDto.SpecialistCreateDto;
-import nycto.homeservices.dto.specialistDto.SpecialistResponseDto;
-import nycto.homeservices.dto.subService.SubServiceCreateDto;
-import nycto.homeservices.entity.Service;
 import nycto.homeservices.exceptions.DuplicateDataException;
 import nycto.homeservices.exceptions.NotValidInputException;
 import nycto.homeservices.service.CustomerService;
 import nycto.homeservices.service.ServiceService;
-import nycto.homeservices.service.SubServiceService;
+import nycto.homeservices.service.SubServiceServiceImpl;
 import nycto.homeservices.service.UserService;
 import nycto.homeservices.service.serviceInterface.SpecialistService;
 import nycto.homeservices.util.dtoMapper.ServiceMapper;
@@ -27,7 +22,7 @@ public class TestRunner implements CommandLineRunner {
     private final SpecialistService specialistService;
     private final UserService userService;
     private final ServiceService serviceService;
-    private final SubServiceService subServiceService;
+    private final SubServiceServiceImpl subServiceService;
     private final ServiceMapper serviceMapper;
 
 

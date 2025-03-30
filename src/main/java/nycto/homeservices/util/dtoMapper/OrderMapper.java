@@ -2,6 +2,7 @@ package nycto.homeservices.util.dtoMapper;
 
 import nycto.homeservices.dto.orderDto.OrderCreateDto;
 import nycto.homeservices.dto.orderDto.OrderResponseDto;
+import nycto.homeservices.dto.orderDto.OrderUpdateDto;
 import nycto.homeservices.entity.Order;
 import org.springframework.stereotype.Component;
 
@@ -14,6 +15,19 @@ public class OrderMapper {
         order.setProposedPrice(createDto.proposedPrice());
         order.setAddress(createDto.address());
         return order;
+    }
+
+    public Order toEntity(OrderUpdateDto updateDto, Order existingOrder) {
+        if (updateDto.description() != null) {
+            existingOrder.setDescription(updateDto.description());
+        }
+        if (updateDto.proposedPrice() != null) {
+            existingOrder.setProposedPrice(updateDto.proposedPrice());
+        }
+        if (updateDto.address() != null) {
+            existingOrder.setAddress(updateDto.address());
+        }
+        return existingOrder;
     }
 
     public OrderResponseDto toResponseDto(Order order) {
@@ -29,5 +43,4 @@ public class OrderMapper {
                 order.getStatus()
         );
     }
-
 }

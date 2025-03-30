@@ -6,9 +6,11 @@ import nycto.homeservices.dto.subService.SubServiceResponseDto;
 import nycto.homeservices.dto.subService.SubServiceUpdateDto;
 import nycto.homeservices.entity.Service;
 import nycto.homeservices.entity.SubService;
+import nycto.homeservices.exceptions.DuplicateDataException;
 import nycto.homeservices.exceptions.NotFoundException;
 import nycto.homeservices.exceptions.NotValidInputException;
 import nycto.homeservices.repository.SubServiceRepository;
+import nycto.homeservices.service.serviceInterface.SubServiceService;
 import nycto.homeservices.util.ValidationUtil;
 import nycto.homeservices.util.dtoMapper.SubServiceMapper;
 
@@ -17,21 +19,29 @@ import java.util.stream.Collectors;
 
 @org.springframework.stereotype.Service
 @RequiredArgsConstructor
-public class SubServiceService {
+public class SubServiceServiceImpl implements SubServiceService {
     private final SubServiceRepository subServiceRepository;
     private final SubServiceMapper subServiceMapper;
     private final ValidationUtil validationUtil;
 
+    @Override
     public SubServiceResponseDto createSubService(SubServiceCreateDto dto, Service existingService)
-            throws NotValidInputException {
+            throws NotValidInputException, DuplicateDataException {
         if (!validationUtil.validate(dto))
             throw new NotValidInputException("Not valid sub-service data");
+
+        if (subServiceRepository.findByName(dto.name()).isPresent())
+            throw new DuplicateDataException("Service with name: "
+                    + dto.name() + " already exists");
+
+
 
         SubService subService = subServiceMapper.toEntity(dto, existingService);
 
         return subServiceMapper.toResponseDto(subServiceRepository.save(subService));
     }
 
+    @Override
     public SubServiceResponseDto getSubServiceById(Long id)
             throws NotFoundException {
 
@@ -42,12 +52,14 @@ public class SubServiceService {
         return subServiceMapper.toResponseDto(subService);
     }
 
+    @Override
     public List<SubServiceResponseDto> getAllSubServices() {
         return subServiceRepository.findAll().stream()
                 .map(subServiceMapper::toResponseDto)
                 .collect(Collectors.toList());
     }
 
+    @Override
     public SubServiceResponseDto updateSubService(Long id, SubServiceUpdateDto updateDto, Service existingService)
             throws NotFoundException, NotValidInputException {
 
@@ -68,6 +80,7 @@ public class SubServiceService {
     }
 
 
+    @Override
     public void deleteSubService(Long id) throws NotFoundException {
 
         SubService subService = subServiceRepository.findById(id)

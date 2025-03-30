@@ -5,19 +5,19 @@ import nycto.homeservices.entity.Specialist;
 import nycto.homeservices.entity.SpecialistCredit;
 import nycto.homeservices.exceptions.CreditException;
 import nycto.homeservices.exceptions.NotFoundException;
-import nycto.homeservices.exceptions.NotValidInputException;
 import nycto.homeservices.repository.SpecialistCreditRepository;
+import nycto.homeservices.service.serviceInterface.SpecialistCreditService;
 import nycto.homeservices.util.ValidationUtil;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class SpecialistCreditService {
+public class SpecialistCreditServiceImpl implements SpecialistCreditService {
 
     private final SpecialistCreditRepository specialistCreditRepository;
     private final ValidationUtil validationUtil;
 
-
+    @Override
     public void increaseSpecialistCredit(Specialist specialist, Long amount)
             throws NotFoundException{
 
@@ -36,6 +36,7 @@ public class SpecialistCreditService {
     }
 
 
+    @Override
     public void decreaseSpecialistCredit(Specialist specialist, Long amount) throws NotFoundException {
         if (specialist == null) {
             throw new NotFoundException("Specialist not found");

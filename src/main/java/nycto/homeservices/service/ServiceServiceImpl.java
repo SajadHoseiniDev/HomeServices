@@ -5,24 +5,26 @@ import nycto.homeservices.dto.serviceDto.ServiceCreateDto;
 import nycto.homeservices.dto.serviceDto.ServiceResponseDto;
 import nycto.homeservices.dto.serviceDto.ServiceUpdateDto;
 import nycto.homeservices.entity.Service;
-import nycto.homeservices.entity.Specialist;
 import nycto.homeservices.exceptions.DuplicateDataException;
 import nycto.homeservices.exceptions.NotFoundException;
 import nycto.homeservices.exceptions.NotValidInputException;
 import nycto.homeservices.repository.ServiceRepository;
+import nycto.homeservices.service.serviceInterface.ServiceService;
 import nycto.homeservices.util.ValidationUtil;
 import nycto.homeservices.util.dtoMapper.ServiceMapper;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
 @org.springframework.stereotype.Service
 @RequiredArgsConstructor
-public class ServiceService {
+public class ServiceServiceImpl implements ServiceService {
 
     private final ServiceRepository serviceRepository;
     private final ValidationUtil validationUtil;
     private final ServiceMapper serviceMapper;
 
+    @Override
     public ServiceResponseDto createService(ServiceCreateDto createDto)
             throws NotValidInputException, DuplicateDataException {
         if (!validationUtil.validate(createDto))
@@ -37,6 +39,7 @@ public class ServiceService {
         return serviceMapper.toResponseDto(savedService);
     }
 
+    @Override
     public ServiceResponseDto getServiceById(Long id) throws NotFoundException {
         Service service = serviceRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Service with id "
@@ -45,12 +48,14 @@ public class ServiceService {
         return serviceMapper.toResponseDto(service);
     }
 
+    @Override
     public List<ServiceResponseDto> getAllServices() {
         return serviceRepository.findAll().stream()
                 .map(serviceMapper::toResponseDto)
                 .collect(Collectors.toList());
     }
 
+    @Override
     public ServiceResponseDto updateService(Long id, ServiceUpdateDto updateDto)
             throws NotFoundException, NotValidInputException {
 
@@ -70,6 +75,7 @@ public class ServiceService {
                 .toResponseDto(serviceRepository.save(updatedService));
     }
 
+    @Override
     public void deleteService(Long id) throws NotFoundException {
         Service service = serviceRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Service with id "
@@ -77,7 +83,6 @@ public class ServiceService {
 
         serviceRepository.delete(service);
     }
-
 
 
 }

@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import nycto.homeservices.dto.customerDto.CustomerCreateDto;
 import nycto.homeservices.dto.customerDto.CustomerUpdateDto;
 import nycto.homeservices.exceptions.NotFoundException;
+import nycto.homeservices.service.serviceInterface.CustomerService;
 import nycto.homeservices.util.dtoMapper.CustomerMapper;
 import nycto.homeservices.dto.customerDto.CustomerResponseDto;
 import nycto.homeservices.entity.Customer;
@@ -20,12 +21,13 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class CustomerService {
+public class CustomerServiceImpl implements CustomerService {
     private final CustomerRepository customerRepository;
     private final ValidationUtil validationUtil;
     private final CustomerMapper customerMapper;
 
 
+    @Override
     public CustomerResponseDto createCustomer(CustomerCreateDto createDto)
             throws NotValidInputException, DuplicateDataException {
 
@@ -47,19 +49,19 @@ public class CustomerService {
         return customerMapper.toResponseDto(savedCustomer);
 
     }
-
+    @Override
     public CustomerResponseDto getCustomerById(Long id) throws NotFoundException {
         Customer customer = customerRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Customer with id " + id + " not found"));
         return customerMapper.toResponseDto(customer);
     }
-
+    @Override
     public List<CustomerResponseDto> getAllCustomers() {
         return customerRepository.findAll().stream()
                 .map(customerMapper::toResponseDto)
                 .collect(Collectors.toList());
     }
-
+    @Override
     public CustomerResponseDto updateCustomer(Long id, CustomerUpdateDto updateDto) throws NotFoundException, NotValidInputException {
         Customer existingCustomer = customerRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Customer with id " + id + " not found"));
@@ -74,6 +76,7 @@ public class CustomerService {
         return customerMapper.toResponseDto(customerRepository.save(updatedCustomer));
     }
 
+    @Override
     public void deleteCustomer(Long id) throws NotFoundException {
         Customer customer = customerRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Customer with id " + id + " not found"));
