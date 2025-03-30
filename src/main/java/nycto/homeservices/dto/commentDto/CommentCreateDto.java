@@ -13,8 +13,8 @@ public record CommentCreateDto(
         String content,
 
         @NotNull(message = "rating can't be null!")
-        @Min(value = 0, message = "rating must be between 0 and 5!")
-        @Max(value = 5, message = "rating must be between 0 and 5!")
+        @Min(value = 1, message = "rating must be between 1 and 5!")
+        @Max(value = 5, message = "rating must be between 1 and 5!")
         Integer rating
 ) {
 }

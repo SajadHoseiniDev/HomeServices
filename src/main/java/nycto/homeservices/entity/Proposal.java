@@ -19,6 +19,9 @@ import java.time.LocalDateTime;
 public class Proposal extends BaseEntity {
 
     @Column(nullable = false)
+    LocalDateTime proposalDate;
+
+    @Column(nullable = false)
     Long proposedPrice;
 
     @Column(nullable = false)

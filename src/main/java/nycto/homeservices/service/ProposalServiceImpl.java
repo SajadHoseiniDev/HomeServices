@@ -16,6 +16,8 @@ import nycto.homeservices.util.ValidationUtil;
 import nycto.homeservices.util.dtoMapper.ProposalMapper;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+
 @Service
 @RequiredArgsConstructor
 public class ProposalServiceImpl {
@@ -54,6 +56,7 @@ public class ProposalServiceImpl {
         Proposal proposal = proposalMapper.toEntity(createDto);
         proposal.setSpecialist(specialist);
         proposal.setOrder(order);
+        proposal.setProposalDate(LocalDateTime.now());
 
         Proposal savedProposal = proposalRepository.save(proposal);
         return proposalMapper.toResponseDto(savedProposal);
