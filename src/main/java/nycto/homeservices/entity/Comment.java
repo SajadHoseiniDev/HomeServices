@@ -18,7 +18,7 @@ import nycto.homeservices.base.BaseEntity;
 public class Comment extends BaseEntity {
 
     @Column(nullable = false)
-    int rating;
+    Double rating;
 
     @Column
     String comment;
