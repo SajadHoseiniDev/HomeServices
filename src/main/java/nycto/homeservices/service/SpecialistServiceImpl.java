@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import nycto.homeservices.dto.specialistDto.SpecialistCreateDto;
 import nycto.homeservices.dto.specialistDto.SpecialistResponseDto;
 import nycto.homeservices.dto.specialistDto.SpecialistUpdateDto;
+import nycto.homeservices.entity.Order;
 import nycto.homeservices.entity.Specialist;
 import nycto.homeservices.entity.enums.UserStatus;
 import nycto.homeservices.exceptions.DuplicateDataException;
@@ -14,6 +15,7 @@ import nycto.homeservices.service.serviceInterface.SpecialistService;
 import nycto.homeservices.util.ValidationUtil;
 import nycto.homeservices.util.dtoMapper.SpecialistMapper;
 import org.springframework.stereotype.Service;
+import nycto.homeservices.entity.Comment;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -124,6 +126,30 @@ public class SpecialistServiceImpl implements SpecialistService {
                 .map(specialistMapper::toResponseDto)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public void calculateSpecialistScore(Specialist specialist, List<Order> completedOrders) throws NotFoundException {
+        if (specialist == null) {
+            throw new NotFoundException("Specialist not found");
+        }
+
+        if (completedOrders == null || completedOrders.isEmpty()) {
+            specialist.setRating(0.0);
+        } else {
+            double averageRating = completedOrders.stream()
+                    .flatMap(order -> order.getComments().stream())
+                    .filter(comment -> comment.getRating()!=null)
+                    .mapToDouble(Comment::getRating)
+                    .average()
+                    .orElse(0.0);
+
+            specialist.setRating(averageRating);
+        }
+
+        specialistRepository.save(specialist);
+    }
+
+
 
 
 }

@@ -3,6 +3,8 @@ package nycto.homeservices.service.serviceInterface;
 import nycto.homeservices.dto.specialistDto.SpecialistCreateDto;
 import nycto.homeservices.dto.specialistDto.SpecialistResponseDto;
 import nycto.homeservices.dto.specialistDto.SpecialistUpdateDto;
+import nycto.homeservices.entity.Order;
+import nycto.homeservices.entity.Specialist;
 import nycto.homeservices.exceptions.DuplicateDataException;
 import nycto.homeservices.exceptions.NotFoundException;
 import nycto.homeservices.exceptions.NotValidInputException;
@@ -31,4 +33,6 @@ public interface SpecialistService {
             throws NotFoundException;
 
     List<SpecialistResponseDto> getSpecialistsByService(nycto.homeservices.entity.Service service) throws NotFoundException;
+
+    void calculateSpecialistScore(Specialist specialist, List<Order> completedOrders) throws NotFoundException;
 }
