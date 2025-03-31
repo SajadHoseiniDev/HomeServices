@@ -57,5 +57,9 @@ public class Order extends BaseEntity {
     @OneToMany(mappedBy ="order" ,fetch = FetchType.LAZY)
     List<Comment> comments =new ArrayList<>();
 
+    @OneToOne
+    @JoinColumn(name = "selected_proposal_id")
+    Proposal selectedProposal;
+
 
 }

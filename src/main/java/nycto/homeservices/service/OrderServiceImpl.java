@@ -6,9 +6,11 @@ import nycto.homeservices.dto.orderDto.OrderResponseDto;
 import nycto.homeservices.dto.orderDto.OrderUpdateDto;
 import nycto.homeservices.entity.*;
 import nycto.homeservices.entity.enums.OrderStatus;
+import nycto.homeservices.exceptions.CreditException;
 import nycto.homeservices.exceptions.NotFoundException;
 import nycto.homeservices.exceptions.NotValidInputException;
 import nycto.homeservices.repository.OrderRepository;
+import nycto.homeservices.service.serviceInterface.CustomerCreditService;
 import nycto.homeservices.service.serviceInterface.OrderService;
 import nycto.homeservices.service.serviceInterface.SpecialistCreditService;
 import nycto.homeservices.util.ValidationUtil;
@@ -26,6 +28,7 @@ public class OrderServiceImpl implements OrderService {
     private final OrderMapper orderMapper;
     private final ValidationUtil validationUtil;
     private final SpecialistCreditService specialistCreditService;
+    private final CustomerCreditService customerCreditService;
 
     @Override
     public OrderResponseDto createOrder(OrderCreateDto createDto, Customer customer, SubService subService)
@@ -80,6 +83,7 @@ public class OrderServiceImpl implements OrderService {
         Order updatedOrder = orderMapper.toEntity(updateDto, existingOrder);
         updatedOrder.setId(id);
 
+
         Order savedOrder = orderRepository.save(updatedOrder);
         return orderMapper.toResponseDto(savedOrder);
     }
@@ -92,25 +96,79 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public OrderResponseDto updateOrderStatus(Long orderId, OrderStatus newStatus) throws NotFoundException {
+    public OrderResponseDto changeOrderStatus(Long orderId, OrderStatus newStatus) throws NotFoundException, CreditException, NotValidInputException {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new NotFoundException("Order with id " + orderId + " not found"));
 
-        order.setStatus(newStatus);
-        if (newStatus == OrderStatus.STARTED)
-            order.setExecutionDate(LocalDateTime.now());
+        checkStatusTransition(order, newStatus);
 
+        order.setStatus(newStatus);
+        if (newStatus == OrderStatus.STARTED) {
+            order.setExecutionDate(LocalDateTime.now());
+        }
         if (newStatus == OrderStatus.PAID) {
-            Proposal selectedProposal = order.getProposals().stream()
-                    .filter(proposal -> proposal.getOrder().getStatus() == OrderStatus.DONE)
-                    .findFirst()
-                    .orElseThrow(() -> new NotFoundException("No proposal found for this order"));
-            Specialist specialist = selectedProposal.getSpecialist();
-            specialistCreditService.increaseSpecialistCredit(specialist,1000L);
+            if (order.getSelectedProposal() == null) {
+                throw new NotFoundException("No selected proposal found for this order");
+            }
+            Specialist specialist = order.getSelectedProposal().getSpecialist();
+
+            Long orderAmount = order.getProposedPrice();
+            if (orderAmount == null || orderAmount <= 0) {
+                throw new NotValidInputException("Order amount must be positive");
+            }
+            customerCreditService.decreaseCustomerCredit(order.getCustomer(), orderAmount);
+
+            specialistCreditService.increaseSpecialistCredit(specialist, 1000L);
         }
 
         Order updatedOrder = orderRepository.save(order);
         return orderMapper.toResponseDto(updatedOrder);
     }
+
+    @Override
+    public void checkStatusTransition(Order order, OrderStatus newStatus) throws NotValidInputException {
+        OrderStatus currentStatus = order.getStatus();
+        switch (currentStatus) {
+            case WAITING_PROPOSALS:
+                if (newStatus != OrderStatus.WAITING_SPECIALIST) {
+                    throw new NotValidInputException("Order must transition from WAITING_PROPOSALS to WAITING_SPECIALIST");
+                }
+                if (order.getProposals().isEmpty()) {
+                    throw new NotValidInputException("At least one proposal must exist to move to WAITING_SPECIALIST");
+                }
+                break;
+            case WAITING_SPECIALIST:
+                if (newStatus != OrderStatus.WAITING_ARRIVAL) {
+                    throw new NotValidInputException("Order must transition from WAITING_SPECIALIST to WAITING_ARRIVAL");
+                }
+                if (order.getSelectedProposal() == null) {
+                    throw new NotValidInputException("A proposal must be selected to move to WAITING_ARRIVAL");
+                }
+                break;
+            case WAITING_ARRIVAL:
+                if (newStatus != OrderStatus.STARTED) {
+                    throw new NotValidInputException("Order must transition from WAITING_ARRIVAL to STARTED");
+                }
+                break;
+            case STARTED:
+                if (newStatus != OrderStatus.DONE) {
+                    throw new NotValidInputException("Order must transition from STARTED to DONE");
+                }
+                break;
+            case DONE:
+                if (newStatus != OrderStatus.PAID) {
+                    throw new NotValidInputException("Order must transition from DONE to PAID");
+                }
+                break;
+            case PAID:
+                throw new NotValidInputException("Order is already PAID and cannot be updated");
+            default:
+                throw new NotValidInputException("Invalid current status: " + currentStatus);
+        }
+    }
+
+
+
+
 
 }

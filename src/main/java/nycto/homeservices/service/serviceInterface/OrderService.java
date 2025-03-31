@@ -4,8 +4,10 @@ import nycto.homeservices.dto.orderDto.OrderCreateDto;
 import nycto.homeservices.dto.orderDto.OrderResponseDto;
 import nycto.homeservices.dto.orderDto.OrderUpdateDto;
 import nycto.homeservices.entity.Customer;
+import nycto.homeservices.entity.Order;
 import nycto.homeservices.entity.SubService;
 import nycto.homeservices.entity.enums.OrderStatus;
+import nycto.homeservices.exceptions.CreditException;
 import nycto.homeservices.exceptions.NotFoundException;
 import nycto.homeservices.exceptions.NotValidInputException;
 
@@ -19,11 +21,13 @@ public interface OrderService {
 
     List<OrderResponseDto> getAllOrders();
 
-    OrderResponseDto updateOrder(Long id, OrderUpdateDto updateDto) throws NotFoundException, NotValidInputException;
 
-    OrderResponseDto updateOrder(Long id, OrderUpdateDto updateDto) throws NotFoundException, NotValidInputException;
+    OrderResponseDto updateOrder(Long id, OrderUpdateDto updateDto)
+            throws NotFoundException, NotValidInputException;
 
     void deleteOrder(Long id) throws NotFoundException;
 
-    OrderResponseDto updateOrderStatus(Long orderId, OrderStatus newStatus) throws NotFoundException;
+    OrderResponseDto changeOrderStatus(Long orderId, OrderStatus newStatus) throws NotFoundException, CreditException, NotValidInputException;
+
+    void checkStatusTransition(Order order, OrderStatus newStatus) throws NotValidInputException;
 }
