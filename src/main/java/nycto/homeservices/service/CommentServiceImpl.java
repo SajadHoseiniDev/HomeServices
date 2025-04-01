@@ -22,7 +22,6 @@ import java.util.List;
 public class CommentServiceImpl implements CommentService {
 
     private final CommentRepository commentRepository;
-    private final OrderRepository orderRepository;
     private final ValidationUtil validationUtil;
     private final CommentMapper commentMapper;
     private final SpecialistService specialistService;
