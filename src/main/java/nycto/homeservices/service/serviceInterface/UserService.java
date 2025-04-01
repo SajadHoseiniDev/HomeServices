@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface UserService {
     UserResponseDto createUser(UserCreateDto createDto)
-            throws NotValidInputException, DuplicateDataException;
+            throws NotValidInputException, DuplicateDataException, NotFoundException;
 
     UserResponseDto getUserById(Long id) throws NotFoundException;
 
