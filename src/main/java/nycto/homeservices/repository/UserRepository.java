@@ -15,7 +15,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByEmail(String email);
 
-
     @Query("SELECT u FROM User u " +
             "LEFT JOIN Specialist s ON u.id = s.id " +
             "LEFT JOIN s.services srv " +
@@ -23,13 +22,15 @@ public interface UserRepository extends JpaRepository<User, Long> {
             "AND (:lastName IS NULL OR u.lastName LIKE %:lastName%) " +
             "AND (:email IS NULL OR u.email LIKE %:email%) " +
             "AND (:userType IS NULL OR u.userType = :userType) " +
-            "AND (:serviceName IS NULL OR srv.name LIKE %:serviceName%)")
+            "AND (:serviceName IS NULL OR srv.name LIKE %:serviceName%) " +
+            "AND (:rating IS NULL OR s.rating >= :rating)")
     List<User> findUsersByFilters(
             @Param("firstName") String firstName,
             @Param("lastName") String lastName,
             @Param("email") String email,
             @Param("userType") UserType userType,
-            @Param("serviceName") String serviceName
+            @Param("serviceName") String serviceName,
+            @Param("rating") Double rating
     );
 
 }

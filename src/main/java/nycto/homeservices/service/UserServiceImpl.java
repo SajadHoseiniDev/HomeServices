@@ -128,7 +128,8 @@ public class UserServiceImpl implements UserService {
                 filterParams.lastName(),
                 filterParams.email(),
                 filterParams.userType(),
-                filterParams.serviceName()
+                filterParams.serviceName(),
+                filterParams.rating()
         );
         return users.stream()
                 .map(userMapper::toResponseDto)

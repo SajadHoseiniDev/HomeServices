@@ -3,6 +3,7 @@ package nycto.homeservices.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import nycto.homeservices.dto.specialistDto.SpecialistRegisterDto;
+import nycto.homeservices.dto.userDto.FilteringDto;
 import nycto.homeservices.dto.userDto.UserCreateDto;
 import nycto.homeservices.dto.userDto.UserResponseDto;
 import nycto.homeservices.entity.Specialist;
@@ -16,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/users")
@@ -75,6 +77,20 @@ public class UserController {
         );
         UserResponseDto responseDto = userService.createUser(createDto);
         return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
+    }
+
+    @GetMapping("/filter")
+    public ResponseEntity<List<UserResponseDto>> filterUsers(
+            @RequestParam(required = false) String firstName,
+            @RequestParam(required = false) String lastName,
+            @RequestParam(required = false) String email,
+            @RequestParam(required = false) UserType userType,
+            @RequestParam(required = false) String serviceName,
+            @RequestParam(required = false) Double rating) {
+        FilteringDto filterParams = new FilteringDto
+                (firstName, lastName, email, userType, serviceName, rating);
+        List<UserResponseDto> users = userService.getUsersByFilter(filterParams);
+        return ResponseEntity.ok(users);
     }
 
 }

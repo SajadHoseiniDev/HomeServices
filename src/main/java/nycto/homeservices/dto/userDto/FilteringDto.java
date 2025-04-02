@@ -7,6 +7,7 @@ public record FilteringDto(
         String lastName,
         String email,
         UserType userType,
-        String serviceName
+        String serviceName,
+        Double rating
 ) {
 }
