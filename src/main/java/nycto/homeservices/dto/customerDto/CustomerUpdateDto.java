@@ -16,10 +16,6 @@ public record CustomerUpdateDto(
         String email,
 
         @NotNull(message = "status can't be null!")
-        UserStatus status,
-
-        @NotNull(message = "credit can't be null!")
-        @Min(value = 0, message = "credit must be non-negative!")
-        Long credit
+        UserStatus status
 ) {
 }

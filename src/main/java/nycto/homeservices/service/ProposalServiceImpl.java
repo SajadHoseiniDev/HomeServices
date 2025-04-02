@@ -13,13 +13,14 @@ import nycto.homeservices.repository.OrderRepository;
 import nycto.homeservices.repository.ProposalRepository;
 import nycto.homeservices.repository.SpecialistRepository;
 import nycto.homeservices.dto.dtoMapper.ProposalMapper;
+import nycto.homeservices.service.serviceInterface.ProposalService;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
-public class ProposalServiceImpl {
+public class ProposalServiceImpl implements ProposalService {
     private final ProposalRepository proposalRepository;
     private final ProposalMapper proposalMapper;
 
@@ -27,6 +28,7 @@ public class ProposalServiceImpl {
     private final SpecialistRepository specialistRepository;
     private final OrderRepository orderRepository;
 
+    @Override
     public ProposalResponseDto createProposal(ProposalCreateDto createDto, Long specialistId)
             throws NotFoundException, ProposalException {
 

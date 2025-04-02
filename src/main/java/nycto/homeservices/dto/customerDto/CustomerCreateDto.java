@@ -18,10 +18,6 @@ public record CustomerCreateDto(
         @NotEmpty(message = "password can't be empty!")
         @Size(min = 8, message = "password must be at least 8 characters!")
         @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d).+$", message = "password must contain letters and numbers!")
-        String password,
-
-        @NotNull(message = "credit can't be null!")
-        @Min(value = 0, message = "credit must be non-negative!")
-        Long credit
+        String password
 ) {
 }
