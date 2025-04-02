@@ -24,7 +24,7 @@ public class ServiceServiceImpl implements ServiceService {
 
     @Override
     public ServiceResponseDto createService(ServiceCreateDto createDto)
-            throws  DuplicateDataException {
+    {
 
         if (serviceRepository.findByName(createDto.name()).isPresent())
             throw new DuplicateDataException("Service with name: "
@@ -36,7 +36,7 @@ public class ServiceServiceImpl implements ServiceService {
     }
 
     @Override
-    public ServiceResponseDto getServiceById(Long id) throws NotFoundException {
+    public ServiceResponseDto getServiceById(Long id) {
         Service service = serviceRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Service with id "
                         + id + " not found"));
@@ -52,8 +52,7 @@ public class ServiceServiceImpl implements ServiceService {
     }
 
     @Override
-    public ServiceResponseDto updateService(Long id, ServiceUpdateDto updateDto)
-            throws NotFoundException {
+    public ServiceResponseDto updateService(Long id, ServiceUpdateDto updateDto) {
 
         Service existingService = serviceRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Service with id "
@@ -69,12 +68,18 @@ public class ServiceServiceImpl implements ServiceService {
     }
 
     @Override
-    public void deleteService(Long id) throws NotFoundException {
+    public void deleteService(Long id) {
         Service service = serviceRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Service with id "
                         + id + " not found"));
 
         serviceRepository.delete(service);
+    }
+
+    @Override
+    public Service findServiceById(Long id) {
+        return serviceRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Service with id " + id + " not found"));
     }
 
 

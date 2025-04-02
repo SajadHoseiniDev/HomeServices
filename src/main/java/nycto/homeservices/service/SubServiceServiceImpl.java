@@ -26,6 +26,11 @@ public class SubServiceServiceImpl implements SubServiceService {
     public SubServiceResponseDto createSubService(SubServiceCreateDto dto, Service existingService)
             throws DuplicateDataException {
 
+        if (existingService == null)
+            throw new NotFoundException("Service not found for creating sub-service");
+
+
+
         if (subServiceRepository.findByName(dto.name()).isPresent())
             throw new DuplicateDataException("Service with name: "
                     + dto.name() + " already exists");

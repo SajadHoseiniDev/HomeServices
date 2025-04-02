@@ -20,6 +20,7 @@ public class ServiceController {
     private final ServiceService serviceService;
 
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<ServiceResponseDto> createService(@Valid @RequestBody ServiceCreateDto createDto) {
         ServiceResponseDto responseDto = serviceService.createService(createDto);
         return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
