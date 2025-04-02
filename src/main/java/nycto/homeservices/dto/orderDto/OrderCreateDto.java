@@ -1,9 +1,8 @@
 package nycto.homeservices.dto.orderDto;
 
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
+
+import java.time.LocalDateTime;
 
 public record OrderCreateDto(
 
@@ -19,6 +18,10 @@ public record OrderCreateDto(
 
         @NotEmpty(message = "address can't be empty!")
         @Size(max = 255, message = "address can't be longer than 255 characters!")
-        String address
+        String address,
+
+        @NotNull(message = "executionDate can't be null!")
+        @Future(message = "date must be in the future!")
+        LocalDateTime executionDate
 ) {
 }
