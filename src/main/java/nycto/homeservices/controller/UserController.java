@@ -31,4 +31,32 @@ public class UserController {
         UserResponseDto userResponseDto = userService.createUser(createDto);
         return new ResponseEntity<>(userResponseDto, HttpStatus.CREATED);
     }
+
+    @PostMapping("/register/specialist")
+    public ResponseEntity<UserResponseDto> registerSpecialist(@Valid @RequestBody UserCreateDto createDto)
+             {
+        createDto = new UserCreateDto(
+                createDto.firstName(),
+                createDto.lastName(),
+                createDto.email(),
+                createDto.password(),
+                UserType.SPECIALIST
+        );
+        UserResponseDto responseDto = userService.createUser(createDto);
+        return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
+    }
+
+    @PostMapping("/register/admin")
+    public ResponseEntity<UserResponseDto> registerAdmin(@Valid @RequestBody UserCreateDto createDto) {
+        createDto = new UserCreateDto(
+                createDto.firstName(),
+                createDto.lastName(),
+                createDto.email(),
+                createDto.password(),
+                UserType.ADMIN
+        );
+        UserResponseDto responseDto = userService.createUser(createDto);
+        return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
+    }
+
 }
