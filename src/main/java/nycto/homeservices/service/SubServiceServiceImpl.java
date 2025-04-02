@@ -8,11 +8,9 @@ import nycto.homeservices.entity.Service;
 import nycto.homeservices.entity.SubService;
 import nycto.homeservices.exceptions.DuplicateDataException;
 import nycto.homeservices.exceptions.NotFoundException;
-import nycto.homeservices.exceptions.NotValidInputException;
 import nycto.homeservices.repository.SubServiceRepository;
 import nycto.homeservices.service.serviceInterface.SubServiceService;
-import nycto.homeservices.util.ValidationUtil;
-import nycto.homeservices.util.dtoMapper.SubServiceMapper;
+import nycto.homeservices.dto.dtoMapper.SubServiceMapper;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -22,13 +20,11 @@ import java.util.stream.Collectors;
 public class SubServiceServiceImpl implements SubServiceService {
     private final SubServiceRepository subServiceRepository;
     private final SubServiceMapper subServiceMapper;
-    private final ValidationUtil validationUtil;
+
 
     @Override
     public SubServiceResponseDto createSubService(SubServiceCreateDto dto, Service existingService)
-            throws NotValidInputException, DuplicateDataException {
-        if (!validationUtil.validate(dto))
-            throw new NotValidInputException("Not valid sub-service data");
+            throws DuplicateDataException {
 
         if (subServiceRepository.findByName(dto.name()).isPresent())
             throw new DuplicateDataException("Service with name: "
@@ -61,14 +57,12 @@ public class SubServiceServiceImpl implements SubServiceService {
 
     @Override
     public SubServiceResponseDto updateSubService(Long id, SubServiceUpdateDto updateDto, Service existingService)
-            throws NotFoundException, NotValidInputException {
+            throws NotFoundException {
 
         SubService existingSubService = subServiceRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("SubService with id "
                         + id + " not found"));
 
-        if (!validationUtil.validate(updateDto))
-            throw new NotValidInputException("Not valid update data");
 
         SubService updatedSubService = subServiceMapper
                 .toEntity(updateDto, existingSubService, existingService);

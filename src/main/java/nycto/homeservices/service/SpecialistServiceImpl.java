@@ -4,18 +4,16 @@ import lombok.RequiredArgsConstructor;
 import nycto.homeservices.dto.specialistDto.SpecialistCreateDto;
 import nycto.homeservices.dto.specialistDto.SpecialistResponseDto;
 import nycto.homeservices.dto.specialistDto.SpecialistUpdateDto;
+import nycto.homeservices.entity.Comment;
 import nycto.homeservices.entity.Order;
 import nycto.homeservices.entity.Specialist;
 import nycto.homeservices.entity.enums.UserStatus;
 import nycto.homeservices.exceptions.DuplicateDataException;
 import nycto.homeservices.exceptions.NotFoundException;
-import nycto.homeservices.exceptions.NotValidInputException;
 import nycto.homeservices.repository.SpecialistRepository;
 import nycto.homeservices.service.serviceInterface.SpecialistService;
-import nycto.homeservices.util.ValidationUtil;
-import nycto.homeservices.util.dtoMapper.SpecialistMapper;
+import nycto.homeservices.dto.dtoMapper.SpecialistMapper;
 import org.springframework.stereotype.Service;
-import nycto.homeservices.entity.Comment;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -25,16 +23,14 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class SpecialistServiceImpl implements SpecialistService {
     private final SpecialistRepository specialistRepository;
-    private final ValidationUtil validationUtil;
+
     private final SpecialistMapper specialistMapper;
 
 
 
     @Override
     public SpecialistResponseDto createSpecialist(SpecialistCreateDto createDto)
-            throws NotValidInputException, DuplicateDataException {
-        if (!validationUtil.validate(createDto))
-            throw new NotValidInputException("Not valid specialist data");
+            throws  DuplicateDataException {
 
         if (specialistRepository.findByEmail(createDto.email()).isPresent())
             throw new DuplicateDataException("Specialist with email: "
@@ -66,13 +62,10 @@ public class SpecialistServiceImpl implements SpecialistService {
 
     @Override
     public SpecialistResponseDto updateSpecialist(Long id, SpecialistUpdateDto updateDto)
-            throws NotFoundException, NotValidInputException {
+            throws NotFoundException{
 
         Specialist existingSpecialist = specialistRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Specialist with id " + id + " not found"));
-
-        if (!validationUtil.validate(updateDto))
-            throw new NotValidInputException("Not valid update data");
 
         Specialist updatedSpecialist = specialistMapper.toEntity(updateDto, existingSpecialist);
 

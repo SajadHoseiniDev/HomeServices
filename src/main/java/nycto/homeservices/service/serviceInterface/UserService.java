@@ -8,8 +8,7 @@ import nycto.homeservices.exceptions.NotValidInputException;
 import java.util.List;
 
 public interface UserService {
-    UserResponseDto createUser(UserCreateDto createDto)
-            throws NotValidInputException, DuplicateDataException, NotFoundException;
+    UserResponseDto createUser(UserCreateDto createDto);
 
     UserResponseDto getUserById(Long id) throws NotFoundException;
 

@@ -8,11 +8,9 @@ import nycto.homeservices.entity.enums.OrderStatus;
 import nycto.homeservices.exceptions.NotFoundException;
 import nycto.homeservices.exceptions.NotValidInputException;
 import nycto.homeservices.repository.CommentRepository;
-import nycto.homeservices.repository.OrderRepository;
 import nycto.homeservices.service.serviceInterface.CommentService;
 import nycto.homeservices.service.serviceInterface.SpecialistService;
-import nycto.homeservices.util.ValidationUtil;
-import nycto.homeservices.util.dtoMapper.CommentMapper;
+import nycto.homeservices.dto.dtoMapper.CommentMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,16 +20,14 @@ import java.util.List;
 public class CommentServiceImpl implements CommentService {
 
     private final CommentRepository commentRepository;
-    private final ValidationUtil validationUtil;
+
     private final CommentMapper commentMapper;
     private final SpecialistService specialistService;
 
     @Override
     public CommentResponseDto createComment(CommentCreateDto createDto, Order order)
             throws NotValidInputException, NotFoundException {
-        if (!validationUtil.validate(createDto)) {
-            throw new NotValidInputException("Not valid comment data");
-        }
+
 
         if (createDto.rating() < 1 || createDto.rating() > 5) {
             throw new NotValidInputException("Rating must be between 1 and 5");

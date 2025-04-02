@@ -13,8 +13,7 @@ import nycto.homeservices.repository.OrderRepository;
 import nycto.homeservices.service.serviceInterface.CustomerCreditService;
 import nycto.homeservices.service.serviceInterface.OrderService;
 import nycto.homeservices.service.serviceInterface.SpecialistCreditService;
-import nycto.homeservices.util.ValidationUtil;
-import nycto.homeservices.util.dtoMapper.OrderMapper;
+import nycto.homeservices.dto.dtoMapper.OrderMapper;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -26,16 +25,14 @@ import java.util.stream.Collectors;
 public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final OrderMapper orderMapper;
-    private final ValidationUtil validationUtil;
+
     private final SpecialistCreditService specialistCreditService;
     private final CustomerCreditService customerCreditService;
 
     @Override
     public OrderResponseDto createOrder(OrderCreateDto createDto, Customer customer, SubService subService)
-            throws NotValidInputException, NotFoundException {
-        if (!validationUtil.validate(createDto)) {
-            throw new NotValidInputException("Not valid order data");
-        }
+            throws NotFoundException {
+
 
         if (customer == null) {
             throw new NotFoundException("Customer not found");

@@ -1,4 +1,4 @@
-package nycto.homeservices.util.dtoMapper;
+package nycto.homeservices.dto.dtoMapper;
 
 import nycto.homeservices.dto.proposalDto.ProposalCreateDto;
 import nycto.homeservices.dto.proposalDto.ProposalResponseDto;

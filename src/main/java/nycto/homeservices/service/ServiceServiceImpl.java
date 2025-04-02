@@ -7,11 +7,9 @@ import nycto.homeservices.dto.serviceDto.ServiceUpdateDto;
 import nycto.homeservices.entity.Service;
 import nycto.homeservices.exceptions.DuplicateDataException;
 import nycto.homeservices.exceptions.NotFoundException;
-import nycto.homeservices.exceptions.NotValidInputException;
 import nycto.homeservices.repository.ServiceRepository;
 import nycto.homeservices.service.serviceInterface.ServiceService;
-import nycto.homeservices.util.ValidationUtil;
-import nycto.homeservices.util.dtoMapper.ServiceMapper;
+import nycto.homeservices.dto.dtoMapper.ServiceMapper;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,14 +19,12 @@ import java.util.stream.Collectors;
 public class ServiceServiceImpl implements ServiceService {
 
     private final ServiceRepository serviceRepository;
-    private final ValidationUtil validationUtil;
+
     private final ServiceMapper serviceMapper;
 
     @Override
     public ServiceResponseDto createService(ServiceCreateDto createDto)
-            throws NotValidInputException, DuplicateDataException {
-        if (!validationUtil.validate(createDto))
-            throw new NotValidInputException("Not valid service data");
+            throws  DuplicateDataException {
 
         if (serviceRepository.findByName(createDto.name()).isPresent())
             throw new DuplicateDataException("Service with name: "
@@ -57,14 +53,11 @@ public class ServiceServiceImpl implements ServiceService {
 
     @Override
     public ServiceResponseDto updateService(Long id, ServiceUpdateDto updateDto)
-            throws NotFoundException, NotValidInputException {
+            throws NotFoundException {
 
         Service existingService = serviceRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Service with id "
                         + id + " not found"));
-
-        if (!validationUtil.validate(updateDto))
-            throw new NotValidInputException("Not valid service data");
 
         Service updatedService = serviceMapper
                 .toEntity(updateDto, existingService);

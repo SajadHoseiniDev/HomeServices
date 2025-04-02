@@ -1,4 +1,4 @@
-package nycto.homeservices.util.dtoMapper;
+package nycto.homeservices.dto.dtoMapper;
 
 import nycto.homeservices.dto.orderDto.OrderCreateDto;
 import nycto.homeservices.dto.orderDto.OrderResponseDto;

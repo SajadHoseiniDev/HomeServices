@@ -7,7 +7,6 @@ import nycto.homeservices.exceptions.CreditException;
 import nycto.homeservices.exceptions.NotFoundException;
 import nycto.homeservices.repository.SpecialistCreditRepository;
 import nycto.homeservices.service.serviceInterface.SpecialistCreditService;
-import nycto.homeservices.util.ValidationUtil;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -15,7 +14,7 @@ import org.springframework.stereotype.Service;
 public class SpecialistCreditServiceImpl implements SpecialistCreditService {
 
     private final SpecialistCreditRepository specialistCreditRepository;
-    private final ValidationUtil validationUtil;
+
 
     @Override
     public void increaseSpecialistCredit(Specialist specialist, Long amount)

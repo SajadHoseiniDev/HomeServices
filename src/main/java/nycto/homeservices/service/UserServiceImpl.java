@@ -14,8 +14,7 @@ import nycto.homeservices.exceptions.NotValidInputException;
 import nycto.homeservices.repository.UserRepository;
 import nycto.homeservices.service.serviceInterface.CustomerCreditService;
 import nycto.homeservices.service.serviceInterface.UserService;
-import nycto.homeservices.util.ValidationUtil;
-import nycto.homeservices.util.dtoMapper.UserMapper;
+import nycto.homeservices.dto.dtoMapper.UserMapper;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -27,15 +26,12 @@ import java.util.stream.Collectors;
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final CustomerCreditService customerCreditService;
-    private final ValidationUtil validationUtil;
+
     private final UserMapper userMapper;
 
     @Override
     public UserResponseDto createUser(UserCreateDto createDto)
             throws NotValidInputException, DuplicateDataException, NotFoundException {
-
-        if (!validationUtil.validate(createDto))
-            throw new NotValidInputException("Not valid user data");
 
         if (userRepository.findByEmail(createDto.email()).isPresent())
             throw new DuplicateDataException
@@ -46,19 +42,19 @@ public class UserServiceImpl implements UserService {
         switch (createDto.userType()) {
             case CUSTOMER:
                 Customer customer = new Customer();
-                userMapper.toEntity(createDto,customer);
+                userMapper.toEntity(createDto, customer);
                 user = customer;
                 break;
             case SPECIALIST:
                 Specialist specialist = new Specialist();
-                userMapper.toEntity(createDto,specialist);
+                userMapper.toEntity(createDto, specialist);
                 specialist.setRating(0.0);
                 specialist.setProfilePicUrl("osapfosdf");
                 user = specialist;
                 break;
             case ADMIN:
                 Admin admin = new Admin();
-                userMapper.toEntity(createDto,admin);
+                userMapper.toEntity(createDto, admin);
                 user = admin;
                 break;
             default:
@@ -94,12 +90,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponseDto updateUser(Long id, UserUpdateDto updateDto)
-            throws NotFoundException, NotValidInputException {
+            throws NotFoundException {
         User existingUser = userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("User with id " + id + " not found"));
 
-        if (!validationUtil.validate(updateDto))
-            throw new NotValidInputException("Not valid update data");
 
         User updatedUser = userMapper.toEntity(updateDto, existingUser);
 
@@ -121,8 +115,6 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("User with id " + id + " not found"));
 
-        if (!validationUtil.validate(passwordDto))
-            throw new NotValidInputException("Not valid specialist data");
 
         user.setPassword(passwordDto.password());
 

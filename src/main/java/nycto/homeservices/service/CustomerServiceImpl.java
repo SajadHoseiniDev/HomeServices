@@ -5,14 +5,13 @@ import nycto.homeservices.dto.customerDto.CustomerCreateDto;
 import nycto.homeservices.dto.customerDto.CustomerUpdateDto;
 import nycto.homeservices.exceptions.NotFoundException;
 import nycto.homeservices.service.serviceInterface.CustomerService;
-import nycto.homeservices.util.dtoMapper.CustomerMapper;
+import nycto.homeservices.dto.dtoMapper.CustomerMapper;
 import nycto.homeservices.dto.customerDto.CustomerResponseDto;
 import nycto.homeservices.entity.Customer;
 import nycto.homeservices.entity.enums.UserStatus;
 import nycto.homeservices.exceptions.DuplicateDataException;
 import nycto.homeservices.exceptions.NotValidInputException;
 import nycto.homeservices.repository.CustomerRepository;
-import nycto.homeservices.util.ValidationUtil;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -23,7 +22,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class CustomerServiceImpl implements CustomerService {
     private final CustomerRepository customerRepository;
-    private final ValidationUtil validationUtil;
+
     private final CustomerMapper customerMapper;
 
 
@@ -31,8 +30,6 @@ public class CustomerServiceImpl implements CustomerService {
     public CustomerResponseDto createCustomer(CustomerCreateDto createDto)
             throws NotValidInputException, DuplicateDataException {
 
-        if (!validationUtil.validate(createDto))
-            throw new NotValidInputException("Not valid user data");
 
         if (customerRepository.findByEmail(createDto.email()).isPresent())
             throw new DuplicateDataException
@@ -66,8 +63,6 @@ public class CustomerServiceImpl implements CustomerService {
         Customer existingCustomer = customerRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Customer with id " + id + " not found"));
 
-        if (!validationUtil.validate(updateDto))
-            throw new NotValidInputException("Not valid update data");
 
         Customer updatedCustomer = customerMapper.toEntity(updateDto, existingCustomer);
 
