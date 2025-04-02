@@ -24,7 +24,6 @@ public record UserCreateDto(
         @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d).+$", message = "password should have letters and numbers!")
         String password,
 
-        @NotNull(message = "userType can't be null!")
         UserType userType
 ) {
 

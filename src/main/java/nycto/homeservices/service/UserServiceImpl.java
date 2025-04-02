@@ -30,8 +30,7 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
 
     @Override
-    public UserResponseDto createUser(UserCreateDto createDto)
-            throws NotValidInputException, DuplicateDataException, NotFoundException {
+    public UserResponseDto createUser(UserCreateDto createDto) {
 
         if (userRepository.findByEmail(createDto.email()).isPresent())
             throw new DuplicateDataException

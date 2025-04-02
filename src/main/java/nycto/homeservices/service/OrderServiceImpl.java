@@ -1,10 +1,14 @@
 package nycto.homeservices.service;
 
 import lombok.RequiredArgsConstructor;
+import nycto.homeservices.dto.dtoMapper.OrderMapper;
 import nycto.homeservices.dto.orderDto.OrderCreateDto;
 import nycto.homeservices.dto.orderDto.OrderResponseDto;
 import nycto.homeservices.dto.orderDto.OrderUpdateDto;
-import nycto.homeservices.entity.*;
+import nycto.homeservices.entity.Customer;
+import nycto.homeservices.entity.Order;
+import nycto.homeservices.entity.Specialist;
+import nycto.homeservices.entity.SubService;
 import nycto.homeservices.entity.enums.OrderStatus;
 import nycto.homeservices.exceptions.CreditException;
 import nycto.homeservices.exceptions.NotFoundException;
@@ -13,7 +17,6 @@ import nycto.homeservices.repository.OrderRepository;
 import nycto.homeservices.service.serviceInterface.CustomerCreditService;
 import nycto.homeservices.service.serviceInterface.OrderService;
 import nycto.homeservices.service.serviceInterface.SpecialistCreditService;
-import nycto.homeservices.dto.dtoMapper.OrderMapper;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -67,14 +70,12 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public OrderResponseDto updateOrder(Long id, OrderUpdateDto updateDto)
-            throws NotFoundException, NotValidInputException {
+            throws NotFoundException{
 
         Order existingOrder = orderRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Order with id "
                         + id + " not found"));
 
-        if (!validationUtil.validate(updateDto))
-            throw new NotValidInputException("Not valid update data");
 
 
         Order updatedOrder = orderMapper.toEntity(updateDto, existingOrder);

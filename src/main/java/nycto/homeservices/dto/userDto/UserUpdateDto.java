@@ -19,7 +19,7 @@ public record UserUpdateDto(
         @Pattern(regexp = "^[A-Za-z0-9+_.-]+@(.+)$", message = "Invalid email format")
         String email,
 
-        @NotNull(message = "UserStatus can't be null!")
+
         UserStatus status
 ) {
 }
