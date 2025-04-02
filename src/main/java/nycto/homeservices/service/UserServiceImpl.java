@@ -46,19 +46,19 @@ public class UserServiceImpl implements UserService {
         switch (createDto.userType()) {
             case CUSTOMER:
                 Customer customer = new Customer();
-                userMapper.toEntity(createDto);
+                userMapper.toEntity(createDto,customer);
                 user = customer;
                 break;
             case SPECIALIST:
                 Specialist specialist = new Specialist();
-                userMapper.toEntity(createDto);
+                userMapper.toEntity(createDto,specialist);
                 specialist.setRating(0.0);
                 specialist.setProfilePicUrl("osapfosdf");
                 user = specialist;
                 break;
             case ADMIN:
                 Admin admin = new Admin();
-                userMapper.toEntity(createDto);
+                userMapper.toEntity(createDto,admin);
                 user = admin;
                 break;
             default:

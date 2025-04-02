@@ -10,7 +10,6 @@ public record CustomerResponseDto(
         String lastName,
         String email,
         UserStatus status,
-        LocalDateTime registrationDate,
-        Long credit
+        LocalDateTime registrationDate
 ) {
 }

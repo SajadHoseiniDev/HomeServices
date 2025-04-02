@@ -17,7 +17,6 @@ public class CustomerMapper {
         customer.setLastName(createDto.lastName());
         customer.setEmail(createDto.email());
         customer.setPassword(createDto.password());
-        customer.setCredit(createDto.credit());
         customer.setUserType(UserType.CUSTOMER);
         return customer;
     }
@@ -27,7 +26,6 @@ public class CustomerMapper {
         existingCustomer.setLastName(updateDto.lastName());
         existingCustomer.setEmail(updateDto.email());
         existingCustomer.setStatus(updateDto.status());
-        existingCustomer.setCredit(updateDto.credit());
         return existingCustomer;
 
     }
@@ -39,8 +37,7 @@ public class CustomerMapper {
                 customer.getLastName(),
                 customer.getEmail(),
                 customer.getStatus(),
-                customer.getRegistrationDate(),
-                customer.getCredit()
+                customer.getRegistrationDate()
         );
     }
 

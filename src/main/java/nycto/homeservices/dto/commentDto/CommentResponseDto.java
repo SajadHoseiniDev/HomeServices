@@ -5,6 +5,6 @@ public record CommentResponseDto(
         Long customerId,
         Long orderId,
         String content,
-        Integer rating
+        Double rating
 ) {
 }
