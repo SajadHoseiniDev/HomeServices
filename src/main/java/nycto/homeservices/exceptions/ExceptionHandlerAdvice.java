@@ -8,6 +8,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -58,4 +59,40 @@ public class ExceptionHandlerAdvice {
         }
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
+
+
+    @ExceptionHandler(Exception.class)public ResponseEntity<ErrorResponseDto> handleIOException(IOException ex) {
+        ErrorResponseDto errorDto = ErrorResponseDto.builder()
+                .message("File upload failed: " + ex.getMessage())
+                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .build();
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorDto);
+    }
+
+    @ExceptionHandler(EmptyFileException.class)
+    public ResponseEntity<ErrorResponseDto> handleEmptyFileException(EmptyFileException ex) {
+        ErrorResponseDto errorDto = ErrorResponseDto.builder()
+                .message(ex.getMessage())
+                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .build();
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorDto);
+    }
+    @ExceptionHandler(InvalidFileFormatException.class)
+    public ResponseEntity<ErrorResponseDto> handleInvalidFileFormatException(InvalidFileFormatException ex) {
+        ErrorResponseDto errorDto = ErrorResponseDto.builder()
+                .message(ex.getMessage())
+                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .build();
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorDto);
+    }
+
+    @ExceptionHandler(FileSizeLimitException.class)
+    public ResponseEntity<ErrorResponseDto> handleFileSizeLimitExceededException(FileSizeLimitException ex) {
+        ErrorResponseDto errorDto = ErrorResponseDto.builder()
+                .message(ex.getMessage())
+                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .build();
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorDto);
+    }
+
 }
