@@ -33,14 +33,6 @@ public class ExceptionHandlerAdvice {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(errorDto);
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponseDto> handleGenericException(Exception ex) {
-        ErrorResponseDto errorDto = ErrorResponseDto.builder()
-                .message(ex.getMessage())
-                .statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
-                .build();
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorDto);
-    }
 
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<ErrorResponseDto> handleNotFoundException(NotFoundException ex) {

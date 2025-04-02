@@ -2,22 +2,28 @@ package nycto.homeservices.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import nycto.homeservices.dto.specialistDto.SpecialistRegisterDto;
 import nycto.homeservices.dto.userDto.UserCreateDto;
 import nycto.homeservices.dto.userDto.UserResponseDto;
+import nycto.homeservices.entity.Specialist;
 import nycto.homeservices.entity.enums.UserType;
+import nycto.homeservices.repository.UserRepository;
+import nycto.homeservices.service.FileUploadService;
 import nycto.homeservices.service.serviceInterface.UserService;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/users")
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
+    private final UserRepository userRepository;
+    private final FileUploadService fileUploadService;
 
     @PostMapping("/register/customer")
     public ResponseEntity<UserResponseDto> registerCustomer(@Valid @RequestBody UserCreateDto createDto) {
@@ -32,19 +38,31 @@ public class UserController {
         return new ResponseEntity<>(userResponseDto, HttpStatus.CREATED);
     }
 
-    @PostMapping("/register/specialist")
-    public ResponseEntity<UserResponseDto> registerSpecialist(@Valid @RequestBody UserCreateDto createDto)
-             {
-        createDto = new UserCreateDto(
-                createDto.firstName(),
-                createDto.lastName(),
-                createDto.email(),
-                createDto.password(),
+
+    @PostMapping(value = "/register/specialist", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<UserResponseDto> registerSpecialist(@Valid @ModelAttribute SpecialistRegisterDto registerDto) throws IOException, IOException {
+
+        String profilePicUrl = fileUploadService.uploadFile(registerDto.getProfilePic());
+
+        UserCreateDto createDto = new UserCreateDto(
+                registerDto.getFirstName(),
+                registerDto.getLastName(),
+                registerDto.getEmail(),
+                registerDto.getPassword(),
                 UserType.SPECIALIST
         );
+
         UserResponseDto responseDto = userService.createUser(createDto);
+
+        Specialist specialist = (Specialist) userRepository.findById(responseDto.id()).orElseThrow();
+        specialist.setProfilePicUrl(profilePicUrl);
+        userRepository.save(specialist);
+
         return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
     }
+
+
+
 
     @PostMapping("/register/admin")
     public ResponseEntity<UserResponseDto> registerAdmin(@Valid @RequestBody UserCreateDto createDto) {

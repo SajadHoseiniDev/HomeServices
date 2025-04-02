@@ -19,18 +19,18 @@ public class FileUploadService {
 
     public String uploadFile(MultipartFile file) throws IOException {
 
-        if (file.isEmpty())
+        if (file.isEmpty()) {
             throw new EmptyFileException("Profile picture is required");
+        }
 
-
-
-        if (!file.getContentType().equals("image/jpeg"))
+        String contentType = file.getContentType();
+        if (contentType == null || !contentType.equals("image/jpeg")) {
             throw new InvalidFileFormatException("Only JPG files are allowed");
+        }
 
-
-        if (file.getSize() > 300 * 1024)
+        if (file.getSize() > 300 * 1024) { // 300 KB
             throw new FileSizeLimitException("File size exceeds 300 KB");
-
+        }
 
         String fileName = UUID.randomUUID().toString() + ".jpg";
         Path filePath = Paths.get(UPLOAD_DIR + fileName);
