@@ -6,6 +6,8 @@ import nycto.homeservices.dto.orderDto.OrderUpdateDto;
 import nycto.homeservices.entity.Order;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
+
 @Component
 public class OrderMapper {
 
@@ -14,6 +16,7 @@ public class OrderMapper {
         order.setDescription(createDto.description());
         order.setProposedPrice(createDto.proposedPrice());
         order.setAddress(createDto.address());
+        order.setExecutionDate(LocalDateTime.now().plusDays(1));
         return order;
     }
 
