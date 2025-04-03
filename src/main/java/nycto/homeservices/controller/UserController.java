@@ -6,6 +6,7 @@ import nycto.homeservices.dto.specialistDto.SpecialistRegisterDto;
 import nycto.homeservices.dto.userDto.FilteringDto;
 import nycto.homeservices.dto.userDto.UserCreateDto;
 import nycto.homeservices.dto.userDto.UserResponseDto;
+import nycto.homeservices.dto.userDto.UserUpdateDto;
 import nycto.homeservices.entity.Specialist;
 import nycto.homeservices.entity.enums.UserType;
 import nycto.homeservices.repository.UserRepository;
@@ -92,5 +93,21 @@ public class UserController {
         List<UserResponseDto> users = userService.getUsersByFilter(filterParams);
         return ResponseEntity.ok(users);
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<UserResponseDto> updateUser(
+            @PathVariable Long id,
+            @Valid @RequestBody UserUpdateDto updateDto) {
+        UserResponseDto responseDto = userService.updateUser(id, updateDto);
+        return ResponseEntity.ok(responseDto);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
+        userService.deleteUser(id);
+        return ResponseEntity.noContent().build();
+    }
+
+
 
 }
