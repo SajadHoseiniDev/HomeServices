@@ -14,6 +14,7 @@ import nycto.homeservices.exceptions.CreditException;
 import nycto.homeservices.exceptions.NotFoundException;
 import nycto.homeservices.exceptions.NotValidInputException;
 import nycto.homeservices.repository.OrderRepository;
+import nycto.homeservices.repository.SpecialistRepository;
 import nycto.homeservices.service.serviceInterface.CustomerCreditService;
 import nycto.homeservices.service.serviceInterface.OrderService;
 import nycto.homeservices.service.serviceInterface.SpecialistCreditService;
@@ -31,6 +32,7 @@ public class OrderServiceImpl implements OrderService {
 
     private final SpecialistCreditService specialistCreditService;
     private final CustomerCreditService customerCreditService;
+    private final SpecialistRepository specialistRepository;
 
     @Override
     public OrderResponseDto createOrder(OrderCreateDto createDto, Customer customer, SubService subService)
@@ -55,7 +57,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public OrderResponseDto getOrderById(Long id) throws NotFoundException {
+    public OrderResponseDto getOrderById(Long id)  {
         Order order = orderRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Order with id " + id + " not found"));
         return orderMapper.toResponseDto(order);
@@ -69,8 +71,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public OrderResponseDto updateOrder(Long id, OrderUpdateDto updateDto)
-            throws NotFoundException{
+    public OrderResponseDto updateOrder(Long id, OrderUpdateDto updateDto) {
 
         Order existingOrder = orderRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Order with id "
@@ -87,16 +88,17 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public void deleteOrder(Long id) throws NotFoundException {
+    public void deleteOrder(Long id) {
         Order order = orderRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Order with id " + id + " not found"));
         orderRepository.delete(order);
     }
 
     @Override
-    public OrderResponseDto changeOrderStatus(Long orderId, OrderStatus newStatus) throws NotFoundException, CreditException, NotValidInputException {
+    public OrderResponseDto changeOrderStatus(Long orderId, OrderStatus newStatus){
         Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new NotFoundException("Order with id " + orderId + " not found"));
+                .orElseThrow(() ->
+                        new NotFoundException("Order with id " + orderId + " not found"));
 
         checkStatusTransition(order, newStatus);
 
@@ -124,7 +126,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public void checkStatusTransition(Order order, OrderStatus newStatus) throws NotValidInputException {
+    public void checkStatusTransition(Order order, OrderStatus newStatus) {
         OrderStatus currentStatus = order.getStatus();
         switch (currentStatus) {
             case WAITING_PROPOSALS:
@@ -167,6 +169,23 @@ public class OrderServiceImpl implements OrderService {
 
 
 
+    /*
+    * مشاهده سفارشات توسط متخصص
+متخصص می تواند سفارشهایی که در زیرخدمت های مرتبط به او ثبت شده اند را مشاهده کند و از بین آنها، سفارش هایی را
+انتخاب کرده و پیشنهاد خود را برای سفارشات فوق ارسال کند*/
+    @Override
+    public List<OrderResponseDto> getOrdersForSpecialist(Long specialistId) {
+        Specialist specialist = specialistRepository.findById(specialistId)
+                .orElseThrow(() ->
+                        new NotFoundException("Specialist with id " + specialistId + " not found"));
+
+        List<nycto.homeservices.entity.Service> specialistServices = specialist.getServices();
+
+        return orderRepository.findAll().stream()
+                .filter(order -> specialistServices.contains(order.getSubService().getService()))
+                .map(orderMapper::toResponseDto)
+                .collect(Collectors.toList());
+    }
 
 
 }

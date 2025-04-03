@@ -27,7 +27,9 @@ public interface OrderService {
 
     void deleteOrder(Long id) throws NotFoundException;
 
-    OrderResponseDto changeOrderStatus(Long orderId, OrderStatus newStatus) throws NotFoundException, CreditException, NotValidInputException;
+    OrderResponseDto changeOrderStatus(Long orderId, OrderStatus newStatus) ;
 
-    void checkStatusTransition(Order order, OrderStatus newStatus) throws NotValidInputException;
+    void checkStatusTransition(Order order, OrderStatus newStatus) ;
+
+    List<OrderResponseDto> getOrdersForSpecialist(Long specialistId) ;
 }
