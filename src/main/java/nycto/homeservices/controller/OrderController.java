@@ -57,5 +57,11 @@ public class OrderController {
         return ResponseEntity.ok(orders);
     }
 
+    @GetMapping("/for-specialist")
+    public ResponseEntity<List<OrderResponseDto>> getOrdersForSpecialist(@RequestParam Long specialistId) {
+        List<OrderResponseDto> orders = orderService.getOrdersForSpecialist(specialistId);
+        return ResponseEntity.ok(orders);
+    }
+
 
 }
