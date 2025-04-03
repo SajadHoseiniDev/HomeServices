@@ -16,7 +16,7 @@ public class OrderMapper {
         order.setDescription(createDto.description());
         order.setProposedPrice(createDto.proposedPrice());
         order.setAddress(createDto.address());
-        order.setExecutionDate(LocalDateTime.now().plusDays(1));
+        order.setExecutionDate(createDto.executionDate());
         return order;
     }
 
