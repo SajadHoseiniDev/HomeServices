@@ -10,7 +10,6 @@ import nycto.homeservices.entity.Order;
 import nycto.homeservices.entity.Specialist;
 import nycto.homeservices.entity.SubService;
 import nycto.homeservices.entity.enums.OrderStatus;
-import nycto.homeservices.exceptions.CreditException;
 import nycto.homeservices.exceptions.NotFoundException;
 import nycto.homeservices.exceptions.NotValidInputException;
 import nycto.homeservices.repository.OrderRepository;
@@ -57,7 +56,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public OrderResponseDto getOrderById(Long id)  {
+    public OrderResponseDto getOrderById(Long id) {
         Order order = orderRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Order with id " + id + " not found"));
         return orderMapper.toResponseDto(order);
@@ -78,7 +77,6 @@ public class OrderServiceImpl implements OrderService {
                         + id + " not found"));
 
 
-
         Order updatedOrder = orderMapper.toEntity(updateDto, existingOrder);
         updatedOrder.setId(id);
 
@@ -95,7 +93,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public OrderResponseDto changeOrderStatus(Long orderId, OrderStatus newStatus){
+    public OrderResponseDto changeOrderStatus(Long orderId, OrderStatus newStatus) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() ->
                         new NotFoundException("Order with id " + orderId + " not found"));
@@ -166,7 +164,6 @@ public class OrderServiceImpl implements OrderService {
                 throw new NotValidInputException("Invalid current status: " + currentStatus);
         }
     }
-
 
 
     /*

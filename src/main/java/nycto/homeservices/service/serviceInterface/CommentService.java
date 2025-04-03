@@ -10,6 +10,7 @@ import nycto.homeservices.exceptions.NotValidInputException;
 
 public interface CommentService {
 
-    CommentResponseDto createComment(CommentCreateDto createDto, Order order)
+
+    CommentResponseDto createComment(CommentCreateDto createDto, Long customerId)
             throws NotValidInputException, NotFoundException;
 }

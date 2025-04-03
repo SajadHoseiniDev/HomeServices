@@ -8,6 +8,7 @@ import nycto.homeservices.entity.enums.OrderStatus;
 import nycto.homeservices.exceptions.NotFoundException;
 import nycto.homeservices.exceptions.NotValidInputException;
 import nycto.homeservices.repository.CommentRepository;
+import nycto.homeservices.repository.OrderRepository;
 import nycto.homeservices.service.serviceInterface.CommentService;
 import nycto.homeservices.service.serviceInterface.SpecialistService;
 import nycto.homeservices.dto.dtoMapper.CommentMapper;
@@ -24,27 +25,31 @@ public class CommentServiceImpl implements CommentService {
     private final CommentMapper commentMapper;
     private final SpecialistService specialistService;
 
-    @Override
-    public CommentResponseDto createComment(CommentCreateDto createDto, Order order)
-            throws NotValidInputException, NotFoundException {
+    private final OrderRepository orderRepository;
 
+    @Override
+    public CommentResponseDto createComment(CommentCreateDto createDto, Long customerId)
+            throws NotValidInputException, NotFoundException {
 
         if (createDto.rating() < 1 || createDto.rating() > 5) {
             throw new NotValidInputException("Rating must be between 1 and 5");
         }
 
-        if (order == null) {
-            throw new NotFoundException("Order not found");
-        }
+        Order order = orderRepository.findById(createDto.orderId())
+                .orElseThrow(() ->
+                        new NotFoundException("Order with id " + createDto.orderId() + " not found"));
 
         Customer customer = order.getCustomer();
-        if (customer == null) {
+        if (customer == null)
             throw new NotFoundException("Customer not found for this order");
-        }
 
-        if (order.getStatus() != OrderStatus.DONE) {
-            throw new NotValidInputException("Order must be DONE to leave a comment");
-        }
+        if (!customer.getId().equals(customerId))
+            throw new NotValidInputException("Only the customer who placed the order can add a comment");
+
+
+        if (order.getStatus() != OrderStatus.DONE)
+            throw new NotValidInputException("Order must be DONE to submit a comment");
+
 
         Specialist specialist = order.getProposals().stream()
                 .filter(proposal -> proposal.getOrder().getStatus() == OrderStatus.DONE)
@@ -67,6 +72,4 @@ public class CommentServiceImpl implements CommentService {
 
         return commentMapper.toResponseDto(savedComment);
     }
-
-
 }
