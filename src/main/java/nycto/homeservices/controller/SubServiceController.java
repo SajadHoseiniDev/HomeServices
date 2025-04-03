@@ -45,4 +45,13 @@ public class SubServiceController {
         return ResponseEntity.ok(subServices);
     }
 
+    @GetMapping("/by-service/{serviceId}")
+    public ResponseEntity<List<SubServiceResponseDto>> getSubServicesByServiceId(@PathVariable Long serviceId) {
+        Service service = serviceService.findServiceById(serviceId);
+        List<SubServiceResponseDto> subServices = subServiceService.getAllSubServices().stream()
+                .filter(subService -> subService.serviceId().equals(serviceId))
+                .toList();
+        return ResponseEntity.ok(subServices);
+    }
+
 }
