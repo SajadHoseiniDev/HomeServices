@@ -32,4 +32,6 @@ public interface OrderService {
     void checkStatusTransition(Order order, OrderStatus newStatus) ;
 
     List<OrderResponseDto> getOrdersForSpecialist(Long specialistId) ;
+
+    List<OrderResponseDto> getOrdersForCustomer(Long customerId);
 }

@@ -1,6 +1,7 @@
 package nycto.homeservices.controller;
 
 import lombok.RequiredArgsConstructor;
+import nycto.homeservices.dto.specialistDto.SpecialistResponseDto;
 import nycto.homeservices.entity.Service;
 import nycto.homeservices.service.serviceInterface.ServiceService;
 import nycto.homeservices.service.serviceInterface.SpecialistService;
@@ -31,4 +32,11 @@ public class SpecialistController {
         specialistService.removeServiceFromSpecialist(specialistId, service);
         return ResponseEntity.ok().build();
     }
+
+    @GetMapping("/{specialistId}")
+    public ResponseEntity<SpecialistResponseDto> getSpecialistById(@PathVariable Long specialistId) {
+        SpecialistResponseDto responseDto = specialistService.getSpecialistById(specialistId);
+        return ResponseEntity.ok(responseDto);
+    }
+
 }

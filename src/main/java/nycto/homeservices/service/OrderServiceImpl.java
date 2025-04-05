@@ -33,6 +33,7 @@ public class OrderServiceImpl implements OrderService {
     private final CustomerCreditService customerCreditService;
     private final SpecialistRepository specialistRepository;
 
+
     @Override
     public OrderResponseDto createOrder(OrderCreateDto createDto, Customer customer, SubService subService)
             throws NotFoundException {
@@ -180,6 +181,13 @@ public class OrderServiceImpl implements OrderService {
 
         return orderRepository.findAll().stream()
                 .filter(order -> specialistServices.contains(order.getSubService().getService()))
+                .map(orderMapper::toResponseDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<OrderResponseDto> getOrdersForCustomer(Long customerId) {
+        return orderRepository.findByCustomerId(customerId).stream()
                 .map(orderMapper::toResponseDto)
                 .collect(Collectors.toList());
     }

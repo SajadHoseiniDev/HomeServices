@@ -3,10 +3,7 @@ package nycto.homeservices.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import nycto.homeservices.dto.specialistDto.SpecialistRegisterDto;
-import nycto.homeservices.dto.userDto.FilteringDto;
-import nycto.homeservices.dto.userDto.UserCreateDto;
-import nycto.homeservices.dto.userDto.UserResponseDto;
-import nycto.homeservices.dto.userDto.UserUpdateDto;
+import nycto.homeservices.dto.userDto.*;
 import nycto.homeservices.entity.Specialist;
 import nycto.homeservices.entity.enums.UserType;
 import nycto.homeservices.repository.UserRepository;
@@ -106,6 +103,14 @@ public class UserController {
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{userId}/history")
+    public ResponseEntity<UserHistoryDto> getUserHistory(
+            @PathVariable Long userId,
+            @RequestParam String userType) {
+        UserHistoryDto history = userService.getUserHistory(userId, userType);
+        return ResponseEntity.ok(history);
     }
 
 

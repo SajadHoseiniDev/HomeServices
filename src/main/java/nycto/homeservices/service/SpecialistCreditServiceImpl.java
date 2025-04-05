@@ -9,6 +9,8 @@ import nycto.homeservices.repository.SpecialistCreditRepository;
 import nycto.homeservices.service.serviceInterface.SpecialistCreditService;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class SpecialistCreditServiceImpl implements SpecialistCreditService {
@@ -54,6 +56,13 @@ public class SpecialistCreditServiceImpl implements SpecialistCreditService {
         credit.setAmount(-amount);
 
         specialistCreditRepository.save(credit);
+    }
+
+
+    @Override
+    public Long getTotalCredit(Long specialistId) {
+        return Optional.ofNullable(specialistCreditRepository.findTotalCreditBySpecialistId(specialistId))
+                .orElse(0L);
     }
 
 

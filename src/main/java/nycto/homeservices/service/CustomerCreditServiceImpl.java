@@ -9,6 +9,8 @@ import nycto.homeservices.repository.CustomerCreditRepository;
 import nycto.homeservices.service.serviceInterface.CustomerCreditService;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class CustomerCreditServiceImpl implements CustomerCreditService {
@@ -49,6 +51,12 @@ public class CustomerCreditServiceImpl implements CustomerCreditService {
         credit.setAmount(-amount);
 
         customerCreditRepository.save(credit);
+    }
+
+    @Override
+    public Long getTotalCredit(Long customerId) {
+        return Optional.ofNullable(customerCreditRepository.findTotalCreditByCustomerId(customerId))
+                .orElse(0L);
     }
 
 

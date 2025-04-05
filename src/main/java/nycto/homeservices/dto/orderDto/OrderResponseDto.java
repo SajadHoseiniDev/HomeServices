@@ -8,7 +8,11 @@ public record OrderResponseDto(
 
         Long id,
         Long customerId,
+        String customerFirstName,
+        String customerLastName,
         Long subServiceId,
+        String subServiceName,
+        Long specialistId,
         String description,
         Long proposedPrice,
         String address,

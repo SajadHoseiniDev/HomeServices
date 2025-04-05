@@ -1,6 +1,7 @@
 package nycto.homeservices.service;
 
 import lombok.RequiredArgsConstructor;
+import nycto.homeservices.dto.orderDto.OrderResponseDto;
 import nycto.homeservices.dto.userDto.*;
 import nycto.homeservices.entity.Admin;
 import nycto.homeservices.entity.Customer;
@@ -13,6 +14,8 @@ import nycto.homeservices.exceptions.NotFoundException;
 import nycto.homeservices.exceptions.NotValidInputException;
 import nycto.homeservices.repository.UserRepository;
 import nycto.homeservices.service.serviceInterface.CustomerCreditService;
+import nycto.homeservices.service.serviceInterface.OrderService;
+import nycto.homeservices.service.serviceInterface.SpecialistCreditService;
 import nycto.homeservices.service.serviceInterface.UserService;
 import nycto.homeservices.dto.dtoMapper.UserMapper;
 import org.springframework.stereotype.Service;
@@ -26,6 +29,8 @@ import java.util.stream.Collectors;
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final CustomerCreditService customerCreditService;
+    private final OrderService orderService;
+    private final SpecialistCreditService specialistCreditService;
 
     private final UserMapper userMapper;
 
@@ -134,6 +139,36 @@ public class UserServiceImpl implements UserService {
         return users.stream()
                 .map(userMapper::toResponseDto)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public UserHistoryDto getUserHistory(Long userId, String userType) {
+        List<OrderResponseDto> orders;
+        Long totalCredit;
+
+        if ("CUSTOMER".equalsIgnoreCase(userType)) {
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new NotFoundException("Customer with id " + userId + " not found"));
+
+            if (!(user instanceof Customer))
+                throw new NotValidInputException("User with id " + userId + " is not a customer");
+
+            orders = orderService.getOrdersForCustomer(userId);
+            totalCredit = customerCreditService.getTotalCredit(userId);
+
+        } else if ("SPECIALIST".equalsIgnoreCase(userType)) {
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new NotFoundException("Specialist with id " + userId + " not found"));
+            if (!(user instanceof Specialist)) {
+                throw new NotValidInputException("User with id " + userId + " is not a specialist");
+            }
+            orders = orderService.getOrdersForSpecialist(userId);
+            totalCredit = specialistCreditService.getTotalCredit(userId);
+        } else {
+            throw new NotValidInputException("Invalid user type: " + userType);
+        }
+
+        return new UserHistoryDto(orders, totalCredit);
     }
 
 

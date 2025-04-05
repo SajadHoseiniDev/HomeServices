@@ -22,4 +22,6 @@ public interface UserService {
     void changePassword(Long id, ChangeUserPasswordDto passwordDto) throws NotFoundException, NotValidInputException;
 
     List<UserResponseDto> getUsersByFilter(FilteringDto filterParams);
+
+    UserHistoryDto getUserHistory(Long userId, String userType);
 }

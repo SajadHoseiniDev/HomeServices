@@ -8,4 +8,6 @@ public interface SpecialistCreditService {
             throws NotFoundException;
 
     void decreaseSpecialistCredit(Specialist specialist, Long amount) throws NotFoundException;
+
+    Long getTotalCredit(Long specialistId);
 }
