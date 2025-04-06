@@ -1,6 +1,8 @@
 package nycto.homeservices.exceptions;
 
 import nycto.homeservices.dto.ErrorResponseDto;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -14,9 +16,12 @@ import java.util.Map;
 
 @RestControllerAdvice
 public class ExceptionHandlerAdvice {
+    private static final Logger logger = LoggerFactory.getLogger(ExceptionHandlerAdvice.class);
+
 
     @ExceptionHandler(NotValidInputException.class)
     public ResponseEntity<ErrorResponseDto> handleNotValidInputException(NotValidInputException ex) {
+        logger.error("Not valid error: {}", ex.getMessage());
         ErrorResponseDto errorDto = ErrorResponseDto.builder()
                 .message(ex.getMessage())
                 .statusCode(HttpStatus.BAD_REQUEST.value())
@@ -26,6 +31,7 @@ public class ExceptionHandlerAdvice {
 
     @ExceptionHandler(DuplicateDataException.class)
     public ResponseEntity<ErrorResponseDto> handleDuplicateDataException(DuplicateDataException ex) {
+        logger.error("Duplicate data: {}", ex.getMessage());
         ErrorResponseDto errorDto = ErrorResponseDto.builder()
                 .message(ex.getMessage())
                 .statusCode(HttpStatus.CONFLICT.value())
@@ -36,6 +42,7 @@ public class ExceptionHandlerAdvice {
 
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<ErrorResponseDto> handleNotFoundException(NotFoundException ex) {
+        logger.error("Not found error: {}", ex.getMessage());
         ErrorResponseDto errorDto = ErrorResponseDto.builder()
                 .message(ex.getMessage())
                 .statusCode(HttpStatus.NOT_FOUND.value())
@@ -45,6 +52,7 @@ public class ExceptionHandlerAdvice {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException ex) {
+        logger.error("Dto Validation error: {}", ex.getMessage());
         Map<String, String> errors = new HashMap<>();
         for (FieldError error : ex.getBindingResult().getFieldErrors()) {
             errors.put(error.getField(), error.getDefaultMessage());
@@ -54,6 +62,7 @@ public class ExceptionHandlerAdvice {
 
 
     @ExceptionHandler(Exception.class)public ResponseEntity<ErrorResponseDto> handleIOException(IOException ex) {
+            logger.error("An Exception type error: {}", ex.getMessage());
         ErrorResponseDto errorDto = ErrorResponseDto.builder()
                 .message("File upload failed: " + ex.getMessage())
                 .statusCode(HttpStatus.BAD_REQUEST.value())
@@ -63,6 +72,7 @@ public class ExceptionHandlerAdvice {
 
     @ExceptionHandler(EmptyFileException.class)
     public ResponseEntity<ErrorResponseDto> handleEmptyFileException(EmptyFileException ex) {
+        logger.error("your file is empty: {}", ex.getMessage());
         ErrorResponseDto errorDto = ErrorResponseDto.builder()
                 .message(ex.getMessage())
                 .statusCode(HttpStatus.BAD_REQUEST.value())
@@ -71,6 +81,7 @@ public class ExceptionHandlerAdvice {
     }
     @ExceptionHandler(InvalidFileFormatException.class)
     public ResponseEntity<ErrorResponseDto> handleInvalidFileFormatException(InvalidFileFormatException ex) {
+        logger.error("your file is invalid type: {}", ex.getMessage());
         ErrorResponseDto errorDto = ErrorResponseDto.builder()
                 .message(ex.getMessage())
                 .statusCode(HttpStatus.BAD_REQUEST.value())
@@ -80,6 +91,7 @@ public class ExceptionHandlerAdvice {
 
     @ExceptionHandler(FileSizeLimitException.class)
     public ResponseEntity<ErrorResponseDto> handleFileSizeLimitExceededException(FileSizeLimitException ex) {
+        logger.error("you reach the size limit: {}", ex.getMessage());
         ErrorResponseDto errorDto = ErrorResponseDto.builder()
                 .message(ex.getMessage())
                 .statusCode(HttpStatus.BAD_REQUEST.value())
