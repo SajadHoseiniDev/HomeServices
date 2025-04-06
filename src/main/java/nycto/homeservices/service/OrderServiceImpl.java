@@ -17,6 +17,8 @@ import nycto.homeservices.repository.SpecialistRepository;
 import nycto.homeservices.service.serviceInterface.CustomerCreditService;
 import nycto.homeservices.service.serviceInterface.OrderService;
 import nycto.homeservices.service.serviceInterface.SpecialistCreditService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -26,6 +28,9 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
+
+    private static final Logger logger = LoggerFactory.getLogger(OrderServiceImpl.class);
+
     private final OrderRepository orderRepository;
     private final OrderMapper orderMapper;
 
@@ -96,23 +101,29 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public OrderResponseDto changeOrderStatus(Long orderId, OrderStatus newStatus) {
         Order order = orderRepository.findById(orderId)
-                .orElseThrow(() ->
-                        new NotFoundException("Order with id " + orderId + " not found"));
+                .orElseThrow(() ->{
+                        logger.info("Changing order status for id: {} to {}", orderId, newStatus);
+                        return new NotFoundException("Order with id " + orderId + " not found");
+                });
+
 
         checkStatusTransition(order, newStatus);
 
         order.setStatus(newStatus);
         if (newStatus == OrderStatus.STARTED) {
+            logger.error("No selected proposal found for orderId: {}", orderId);
             order.setExecutionDate(LocalDateTime.now());
         }
         if (newStatus == OrderStatus.PAID) {
             if (order.getSelectedProposal() == null) {
+                logger.error("No selected proposal found for orderId: {}", orderId);
                 throw new NotFoundException("No selected proposal found for this order");
             }
             Specialist specialist = order.getSelectedProposal().getSpecialist();
 
             Long orderAmount = order.getProposedPrice();
             if (orderAmount == null || orderAmount <= 0) {
+                logger.error("Invalid order amount: {} for orderId: {}", orderAmount, orderId);
                 throw new NotValidInputException("Order amount must be positive");
             }
             customerCreditService.decreaseCustomerCredit(order.getCustomer(), orderAmount);
@@ -121,6 +132,7 @@ public class OrderServiceImpl implements OrderService {
         }
 
         Order updatedOrder = orderRepository.save(order);
+        logger.info("Order status updated successfully for orderId: {}", orderId);
         return orderMapper.toResponseDto(updatedOrder);
     }
 
