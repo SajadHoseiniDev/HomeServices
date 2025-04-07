@@ -7,7 +7,6 @@ import nycto.homeservices.entity.Customer;
 import nycto.homeservices.entity.Order;
 import nycto.homeservices.entity.SubService;
 import nycto.homeservices.entity.enums.OrderStatus;
-import nycto.homeservices.exceptions.CreditException;
 import nycto.homeservices.exceptions.NotFoundException;
 import nycto.homeservices.exceptions.NotValidInputException;
 
@@ -36,5 +35,7 @@ public interface OrderService {
     List<OrderResponseDto> getOrdersForCustomer(Long customerId);
 
     OrderResponseDto selectProposal(Long orderId, Long proposalId) throws NotFoundException;
+
+    OrderResponseDto confirmProposalBySpecialist(Long orderId, Long specialistId) throws NotFoundException; // متد جدید
 
 }

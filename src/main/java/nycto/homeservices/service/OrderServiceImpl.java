@@ -217,6 +217,31 @@ public class OrderServiceImpl implements OrderService {
         }
 
         order.setSelectedProposal(proposal);
+        checkStatusTransition(order, OrderStatus.WAITING_SPECIALIST);
+        order.setStatus(OrderStatus.WAITING_SPECIALIST);
+
+        Order updatedOrder = orderRepository.save(order);
+        return orderMapper.toResponseDto(updatedOrder);
+    }
+
+    @Override
+    public OrderResponseDto confirmProposalBySpecialist(Long orderId, Long specialistId) throws NotFoundException {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new NotFoundException("Order with id " + orderId + " not found"));
+
+        if (order.getStatus() != OrderStatus.WAITING_SPECIALIST) {
+            throw new NotValidInputException("Order must be in WAITING_SPECIALIST status to confirm proposal");
+        }
+
+        Proposal selectedProposal = order.getSelectedProposal();
+        if (selectedProposal == null) {
+            throw new NotFoundException("No selected proposal found for this order");
+        }
+
+        if (!selectedProposal.getSpecialist().getId().equals(specialistId)) {
+            throw new NotValidInputException("Only the selected specialist can confirm this proposal");
+        }
+
         checkStatusTransition(order, OrderStatus.WAITING_ARRIVAL);
         order.setStatus(OrderStatus.WAITING_ARRIVAL);
 

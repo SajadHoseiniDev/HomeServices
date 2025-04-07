@@ -81,5 +81,13 @@ public class OrderController {
         return ResponseEntity.ok(responseDto);
     }
 
+    @PutMapping("/{orderId}/confirm-proposal")
+    public ResponseEntity<OrderResponseDto> confirmProposal(
+            @PathVariable Long orderId,
+            @RequestParam Long specialistId) {
+        OrderResponseDto responseDto = orderService.confirmProposalBySpecialist(orderId, specialistId);
+        return ResponseEntity.ok(responseDto);
+    }
+
 
 }
