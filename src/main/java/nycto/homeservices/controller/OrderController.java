@@ -64,4 +64,13 @@ public class OrderController {
     }
 
 
+    @PutMapping("/{orderId}/select-proposal")
+    public ResponseEntity<OrderResponseDto> selectProposal(
+            @PathVariable Long orderId,
+            @RequestParam Long proposalId) {
+        OrderResponseDto responseDto = orderService.selectProposal(orderId, proposalId);
+        return ResponseEntity.ok(responseDto);
+    }
+
+
 }

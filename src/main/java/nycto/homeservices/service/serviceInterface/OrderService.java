@@ -34,4 +34,7 @@ public interface OrderService {
     List<OrderResponseDto> getOrdersForSpecialist(Long specialistId) ;
 
     List<OrderResponseDto> getOrdersForCustomer(Long customerId);
+
+    OrderResponseDto selectProposal(Long orderId, Long proposalId) throws NotFoundException;
+
 }

@@ -5,14 +5,12 @@ import nycto.homeservices.dto.dtoMapper.OrderMapper;
 import nycto.homeservices.dto.orderDto.OrderCreateDto;
 import nycto.homeservices.dto.orderDto.OrderResponseDto;
 import nycto.homeservices.dto.orderDto.OrderUpdateDto;
-import nycto.homeservices.entity.Customer;
-import nycto.homeservices.entity.Order;
-import nycto.homeservices.entity.Specialist;
-import nycto.homeservices.entity.SubService;
+import nycto.homeservices.entity.*;
 import nycto.homeservices.entity.enums.OrderStatus;
 import nycto.homeservices.exceptions.NotFoundException;
 import nycto.homeservices.exceptions.NotValidInputException;
 import nycto.homeservices.repository.OrderRepository;
+import nycto.homeservices.repository.ProposalRepository;
 import nycto.homeservices.repository.SpecialistRepository;
 import nycto.homeservices.service.serviceInterface.CustomerCreditService;
 import nycto.homeservices.service.serviceInterface.OrderService;
@@ -37,6 +35,7 @@ public class OrderServiceImpl implements OrderService {
     private final SpecialistCreditService specialistCreditService;
     private final CustomerCreditService customerCreditService;
     private final SpecialistRepository specialistRepository;
+    private final ProposalRepository proposalRepository;
 
 
     @Override
@@ -202,6 +201,27 @@ public class OrderServiceImpl implements OrderService {
         return orderRepository.findByCustomerId(customerId).stream()
                 .map(orderMapper::toResponseDto)
                 .collect(Collectors.toList());
+    }
+
+
+    @Override
+    public OrderResponseDto selectProposal(Long orderId, Long proposalId) throws NotFoundException {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new NotFoundException("Order with id " + orderId + " not found"));
+
+        Proposal proposal = proposalRepository.findById(proposalId)
+                .orElseThrow(() -> new NotFoundException("Proposal with id " + proposalId + " not found"));
+
+        if (!proposal.getOrder().getId().equals(orderId)) {
+            throw new NotValidInputException("Proposal does not belong to this order");
+        }
+
+        order.setSelectedProposal(proposal);
+        checkStatusTransition(order, OrderStatus.WAITING_ARRIVAL);
+        order.setStatus(OrderStatus.WAITING_ARRIVAL);
+
+        Order updatedOrder = orderRepository.save(order);
+        return orderMapper.toResponseDto(updatedOrder);
     }
 
 

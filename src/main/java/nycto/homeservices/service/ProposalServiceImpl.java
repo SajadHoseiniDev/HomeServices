@@ -14,13 +14,20 @@ import nycto.homeservices.repository.ProposalRepository;
 import nycto.homeservices.repository.SpecialistRepository;
 import nycto.homeservices.dto.dtoMapper.ProposalMapper;
 import nycto.homeservices.service.serviceInterface.ProposalService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class ProposalServiceImpl implements ProposalService {
+
+    private static final Logger logger = LoggerFactory.getLogger(ProposalServiceImpl.class);
+
     private final ProposalRepository proposalRepository;
     private final ProposalMapper proposalMapper;
 
@@ -59,6 +66,17 @@ public class ProposalServiceImpl implements ProposalService {
 
         Proposal savedProposal = proposalRepository.save(proposal);
         return proposalMapper.toResponseDto(savedProposal);
+    }
+
+
+    @Override
+    public List<ProposalResponseDto> getProposalsByOrderId(Long orderId) throws NotFoundException {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new NotFoundException("Order with id " + orderId + " not found"));
+
+        return order.getProposals().stream()
+                .map(proposalMapper::toResponseDto)
+                .collect(Collectors.toList());
     }
 
 }
