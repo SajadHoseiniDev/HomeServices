@@ -3,6 +3,7 @@ package nycto.homeservices.service;
 import lombok.RequiredArgsConstructor;
 import nycto.homeservices.dto.commentDto.CommentCreateDto;
 import nycto.homeservices.dto.commentDto.CommentResponseDto;
+import nycto.homeservices.dto.commentDto.CommentUpdateDto;
 import nycto.homeservices.entity.*;
 import nycto.homeservices.entity.enums.OrderStatus;
 import nycto.homeservices.exceptions.NotFoundException;
@@ -17,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -86,4 +88,78 @@ public class CommentServiceImpl implements CommentService {
 
         return commentMapper.toResponseDto(savedComment);
     }
+
+
+    @Override
+    public CommentResponseDto getCommentById(Long id) throws NotFoundException {
+        Comment comment = commentRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Comment with id " + id + " not found"));
+        return commentMapper.toResponseDto(comment);
+    }
+
+    @Override
+    public List<CommentResponseDto> getAllComments() {
+        return commentRepository.findAll().stream()
+                .map(commentMapper::toResponseDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public CommentResponseDto updateComment(Long id, CommentUpdateDto updateDto) throws NotFoundException {
+        Comment existingComment = commentRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Comment with id " + id + " not found"));
+
+        if (updateDto.content() != null) {
+            existingComment.setComment(updateDto.content());
+        }
+        if (updateDto.rating() != null) {
+            if (updateDto.rating() < 1 || updateDto.rating() > 5) {
+                throw new NotValidInputException("Rating must be between 1 and 5");
+            }
+            existingComment.setRating(updateDto.rating());
+        }
+
+        Comment updatedComment = commentRepository.save(existingComment);
+
+        Order order = updatedComment.getOrder();
+        Specialist specialist = order.getProposals().stream()
+                .filter(proposal -> proposal.getOrder().getStatus() == OrderStatus.DONE)
+                .map(Proposal::getSpecialist)
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException("Specialist not found for this order"));
+
+        List<Order> completedOrders = order.getProposals().stream()
+                .filter(proposal -> proposal.getSpecialist().getId().equals(specialist.getId()))
+                .map(Proposal::getOrder)
+                .filter(o -> o.getStatus() == OrderStatus.DONE)
+                .toList();
+        specialistService.calculateSpecialistScore(specialist, completedOrders);
+
+        return commentMapper.toResponseDto(updatedComment);
+    }
+
+    @Override
+    public void deleteComment(Long id) throws NotFoundException {
+        Comment comment = commentRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Comment with id " + id + " not found"));
+
+        Order order = comment.getOrder();
+        Specialist specialist = order.getProposals().stream()
+                .filter(proposal -> proposal.getOrder().getStatus() == OrderStatus.DONE)
+                .map(Proposal::getSpecialist)
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException("Specialist not found for this order"));
+
+        commentRepository.delete(comment);
+
+        List<Order> completedOrders = order.getProposals().stream()
+                .filter(proposal -> proposal.getSpecialist().getId().equals(specialist.getId()))
+                .map(Proposal::getOrder)
+                .filter(o -> o.getStatus() == OrderStatus.DONE)
+                .toList();
+        specialistService.calculateSpecialistScore(specialist, completedOrders);
+    }
+
+
+
 }
