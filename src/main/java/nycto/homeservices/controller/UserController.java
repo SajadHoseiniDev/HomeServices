@@ -62,8 +62,6 @@ public class UserController {
     }
 
 
-
-
     @PostMapping("/register/admin")
     public ResponseEntity<UserResponseDto> registerAdmin(@Valid @RequestBody UserCreateDto createDto) {
         createDto = new UserCreateDto(
@@ -113,6 +111,12 @@ public class UserController {
         return ResponseEntity.ok(history);
     }
 
-
+    @PutMapping("/{id}/change-password")
+    public ResponseEntity<Void> changePassword(
+            @PathVariable Long id,
+            @Valid @RequestBody ChangeUserPasswordDto passwordDto) {
+        userService.changePassword(id, passwordDto);
+        return ResponseEntity.ok().build();
+    }
 
 }
