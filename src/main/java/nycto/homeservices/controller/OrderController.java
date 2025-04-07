@@ -6,6 +6,7 @@ import nycto.homeservices.dto.orderDto.OrderCreateDto;
 import nycto.homeservices.dto.orderDto.OrderResponseDto;
 import nycto.homeservices.entity.Customer;
 import nycto.homeservices.entity.SubService;
+import nycto.homeservices.entity.enums.OrderStatus;
 import nycto.homeservices.repository.CustomerRepository;
 import nycto.homeservices.repository.SubServiceRepository;
 import nycto.homeservices.service.serviceInterface.OrderService;
@@ -69,6 +70,14 @@ public class OrderController {
             @PathVariable Long orderId,
             @RequestParam Long proposalId) {
         OrderResponseDto responseDto = orderService.selectProposal(orderId, proposalId);
+        return ResponseEntity.ok(responseDto);
+    }
+
+    @PutMapping("/{id}/status")
+    public ResponseEntity<OrderResponseDto> changeOrderStatus(
+            @PathVariable Long id,
+            @RequestParam OrderStatus status) {
+        OrderResponseDto responseDto = orderService.changeOrderStatus(id, status);
         return ResponseEntity.ok(responseDto);
     }
 
