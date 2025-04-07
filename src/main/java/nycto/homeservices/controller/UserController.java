@@ -7,7 +7,7 @@ import nycto.homeservices.dto.userDto.*;
 import nycto.homeservices.entity.Specialist;
 import nycto.homeservices.entity.enums.UserType;
 import nycto.homeservices.repository.UserRepository;
-import nycto.homeservices.service.FileUploadService;
+import nycto.homeservices.service.FileUploadServiceImpl;
 import nycto.homeservices.service.serviceInterface.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -23,7 +23,7 @@ import java.util.List;
 public class UserController {
     private final UserService userService;
     private final UserRepository userRepository;
-    private final FileUploadService fileUploadService;
+    private final FileUploadServiceImpl fileUploadService;
 
     @PostMapping("/register/customer")
     public ResponseEntity<UserResponseDto> registerCustomer(@Valid @RequestBody UserCreateDto createDto) {

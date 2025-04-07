@@ -5,6 +5,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import nycto.homeservices.dto.serviceDto.ServiceCreateDto;
 import nycto.homeservices.dto.serviceDto.ServiceResponseDto;
+import nycto.homeservices.dto.serviceDto.ServiceUpdateDto;
 import nycto.homeservices.service.serviceInterface.ServiceService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,6 +37,19 @@ public class ServiceController {
     public ResponseEntity<List<ServiceResponseDto>> getAllServices() {
         List<ServiceResponseDto> services = serviceService.getAllServices();
         return ResponseEntity.ok(services);
+    }
+    @PutMapping("/{id}")
+    public ResponseEntity<ServiceResponseDto> updateService(
+            @PathVariable Long id,
+            @Valid @RequestBody ServiceUpdateDto updateDto) {
+        ServiceResponseDto responseDto = serviceService.updateService(id, updateDto);
+        return ResponseEntity.ok(responseDto);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteService(@PathVariable Long id) {
+        serviceService.deleteService(id);
+        return ResponseEntity.noContent().build();
     }
 
 }

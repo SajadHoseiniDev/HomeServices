@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import nycto.homeservices.dto.subService.SubServiceCreateDto;
 import nycto.homeservices.dto.subService.SubServiceResponseDto;
+import nycto.homeservices.dto.subService.SubServiceUpdateDto;
 import nycto.homeservices.entity.Service;
 import nycto.homeservices.service.serviceInterface.ServiceService;
 import nycto.homeservices.service.serviceInterface.SubServiceService;
@@ -52,6 +53,22 @@ public class SubServiceController {
                 .filter(subService -> subService.serviceId().equals(serviceId))
                 .toList();
         return ResponseEntity.ok(subServices);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<SubServiceResponseDto> updateSubService(
+            @PathVariable Long id,
+            @RequestParam Long serviceId,
+            @Valid @RequestBody SubServiceUpdateDto updateDto) {
+        Service existingService = serviceService.findServiceById(serviceId);
+        SubServiceResponseDto responseDto = subServiceService.updateSubService(id, updateDto, existingService);
+        return ResponseEntity.ok(responseDto);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteSubService(@PathVariable Long id) {
+        subServiceService.deleteSubService(id);
+        return ResponseEntity.noContent().build();
     }
 
 }
