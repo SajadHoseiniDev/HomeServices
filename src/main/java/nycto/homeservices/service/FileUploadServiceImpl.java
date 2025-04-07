@@ -3,6 +3,7 @@ package nycto.homeservices.service;
 import nycto.homeservices.exceptions.EmptyFileException;
 import nycto.homeservices.exceptions.FileSizeLimitException;
 import nycto.homeservices.exceptions.InvalidFileFormatException;
+import nycto.homeservices.service.serviceInterface.FileUploadService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -15,13 +16,14 @@ import java.nio.file.Paths;
 import java.util.UUID;
 
 @Service
-public class FileUploadService {
+public class FileUploadServiceImpl implements FileUploadService {
 
-    private static final Logger logger = LoggerFactory.getLogger(FileUploadService.class);
+    private static final Logger logger = LoggerFactory.getLogger(FileUploadServiceImpl.class);
 
 
     private static final String UPLOAD_DIR = "uploads/";
 
+    @Override
     public String uploadFile(MultipartFile file) throws IOException {
 
         if (file.isEmpty()) {
