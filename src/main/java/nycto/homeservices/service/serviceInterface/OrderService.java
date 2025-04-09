@@ -37,4 +37,7 @@ public interface OrderService {
 
     OrderResponseDto selectProposal(Long orderId, Long proposalId) throws NotFoundException;
 
+    OrderResponseDto confirmProposalBySpecialist(Long orderId, Long specialistId) throws NotFoundException;
+
+    List<OrderResponseDto> getAvailableOrdersToPayment(Long customerId);
 }

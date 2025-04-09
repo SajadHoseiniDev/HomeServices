@@ -35,6 +35,7 @@ public class OrderMapper {
     }
 
     public OrderResponseDto toResponseDto(Order order) {
+
         Proposal selectedProposal = order.getSelectedProposal();
         Long specialistId = (selectedProposal != null && selectedProposal.getSpecialist() != null)
                 ? selectedProposal.getSpecialist().getId()

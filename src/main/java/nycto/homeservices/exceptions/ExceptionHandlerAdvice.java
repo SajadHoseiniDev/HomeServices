@@ -1,6 +1,7 @@
 package nycto.homeservices.exceptions;
 
 import nycto.homeservices.dto.ErrorResponseDto;
+import org.hibernate.TypeMismatchException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -94,6 +95,15 @@ public class ExceptionHandlerAdvice {
         logger.error("you reach the size limit: {}", ex.getMessage());
         ErrorResponseDto errorDto = ErrorResponseDto.builder()
                 .message(ex.getMessage())
+                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .build();
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorDto);
+    }
+
+    @ExceptionHandler(TypeMismatchException.class)
+    public ResponseEntity<ErrorResponseDto> handleTypeMismatchException(TypeMismatchException ex) {
+        ErrorResponseDto errorDto = ErrorResponseDto.builder()
+                .message("Invalid parameter type: " + ex.getMessage())
                 .statusCode(HttpStatus.BAD_REQUEST.value())
                 .build();
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorDto);

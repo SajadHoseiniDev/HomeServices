@@ -250,7 +250,11 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public List<OrderResponseDto> getAvailableOrdersToPayment(Long customerId) {
 
-        return orderRepository.findByCustomerIdAndStatus(customerId,OrderStatus.DONE).stream()
+        if (customerId == null || customerId <= 0) {
+            throw new NotValidInputException("customerId must be a positive number");
+        }
+
+        return orderRepository.findByCustomerIdAndStatus(customerId, OrderStatus.DONE).stream()
                 .map(orderMapper::toResponseDto)
                 .collect(Collectors.toList());
     }

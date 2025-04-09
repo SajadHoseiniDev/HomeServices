@@ -81,5 +81,11 @@ public class OrderController {
         return ResponseEntity.ok(responseDto);
     }
 
+    @GetMapping("/available-for-payment")
+    public ResponseEntity<List<OrderResponseDto>> getOrdersAvailableForPayment(@RequestParam Long customerId) {
+        List<OrderResponseDto> orders = orderService.getAvailableOrdersToPayment(customerId);
+        return ResponseEntity.ok(orders);
+    }
+
 
 }
