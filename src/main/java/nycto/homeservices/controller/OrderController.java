@@ -64,6 +64,13 @@ public class OrderController {
         return ResponseEntity.ok(orders);
     }
 
+//    @GetMapping("/for-customer")
+//    public ResponseEntity<List<OrderResponseDto>> getOrdersForCustomer(@RequestParam Long customerId) {
+//        List<OrderResponseDto> orders = orderService.getOrdersForCustomer(customerId);
+//        return ResponseEntity.ok(orders);
+//    }
+
+
 
     @PutMapping("/{orderId}/select-proposal")
     public ResponseEntity<OrderResponseDto> selectProposal(
@@ -79,6 +86,20 @@ public class OrderController {
             @RequestParam OrderStatus status) {
         OrderResponseDto responseDto = orderService.changeOrderStatus(id, status);
         return ResponseEntity.ok(responseDto);
+    }
+
+    @PutMapping("/{orderId}/confirm-proposal")
+    public ResponseEntity<OrderResponseDto> confirmProposal(
+            @PathVariable Long orderId,
+            @RequestParam Long specialistId) {
+        OrderResponseDto responseDto = orderService.confirmProposalBySpecialist(orderId, specialistId);
+        return ResponseEntity.ok(responseDto);
+    }
+
+    @GetMapping("/available-for-payment")
+    public ResponseEntity<List<OrderResponseDto>> getOrdersAvailableForPayment(@RequestParam Long customerId) {
+        List<OrderResponseDto> orders = orderService.getAvailableOrdersToPayment(customerId);
+        return ResponseEntity.ok(orders);
     }
 
 

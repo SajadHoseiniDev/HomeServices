@@ -46,7 +46,7 @@ public class Order extends BaseEntity {
 
 
     @ManyToOne
-            @JoinColumn(name="customer_id", nullable=false)
+    @JoinColumn(name="customer_id", nullable=false)
     Customer customer;
 
 

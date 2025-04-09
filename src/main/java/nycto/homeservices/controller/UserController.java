@@ -7,7 +7,7 @@ import nycto.homeservices.dto.userDto.*;
 import nycto.homeservices.entity.Specialist;
 import nycto.homeservices.entity.enums.UserType;
 import nycto.homeservices.repository.UserRepository;
-import nycto.homeservices.service.FileUploadServiceImpl;
+import nycto.homeservices.service.serviceImpl.FileUploadServiceImpl;
 import nycto.homeservices.service.serviceInterface.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -88,6 +88,19 @@ public class UserController {
         List<UserResponseDto> users = userService.getUsersByFilter(filterParams);
         return ResponseEntity.ok(users);
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<UserResponseDto> getUserById(@PathVariable Long id) {
+        UserResponseDto responseDto = userService.getUserById(id);
+        return ResponseEntity.ok(responseDto);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<UserResponseDto>> getAllUsers() {
+        List<UserResponseDto> users = userService.getAllUsers();
+        return ResponseEntity.ok(users);
+    }
+
 
     @PutMapping("/{id}")
     public ResponseEntity<UserResponseDto> updateUser(
