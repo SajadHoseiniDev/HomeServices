@@ -1,9 +1,6 @@
 package nycto.homeservices.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -23,9 +20,9 @@ import nycto.homeservices.base.BaseEntity;
 public class CustomerCredit extends BaseEntity {
 
     @Column(nullable = false)
-    long amount;
+    long amount=0L;
 
-    @ManyToOne
-    @JoinColumn(name = "customer_id", nullable = false)
+    @OneToOne
+    @JoinColumn(name = "customer_id", nullable = false, unique = true)
     Customer customer;
 }

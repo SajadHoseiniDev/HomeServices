@@ -4,6 +4,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import nycto.homeservices.dto.orderDto.OrderCreateDto;
 import nycto.homeservices.dto.orderDto.OrderResponseDto;
+import nycto.homeservices.dto.payment.PaymentRequestDto;
+import nycto.homeservices.dto.payment.PaymentResponseDto;
 import nycto.homeservices.entity.Customer;
 import nycto.homeservices.entity.SubService;
 import nycto.homeservices.entity.enums.OrderStatus;
@@ -85,6 +87,15 @@ public class OrderController {
     public ResponseEntity<List<OrderResponseDto>> getOrdersAvailableForPayment(@RequestParam Long customerId) {
         List<OrderResponseDto> orders = orderService.getAvailableOrdersToPayment(customerId);
         return ResponseEntity.ok(orders);
+    }
+
+    @PostMapping("/{orderId}/pay")
+    public ResponseEntity<PaymentResponseDto> payOrder(
+            @PathVariable Long orderId,
+            @RequestParam Long customerId,
+            @Valid @RequestBody PaymentRequestDto paymentRequest) {
+        PaymentResponseDto response = orderService.payOrder(orderId, customerId, paymentRequest);
+        return ResponseEntity.ok(response);
     }
 
 

@@ -1,17 +1,24 @@
 package nycto.homeservices.service.serviceImpl;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import nycto.homeservices.dto.dtoMapper.OrderMapper;
 import nycto.homeservices.dto.orderDto.OrderCreateDto;
 import nycto.homeservices.dto.orderDto.OrderResponseDto;
 import nycto.homeservices.dto.orderDto.OrderUpdateDto;
+import nycto.homeservices.dto.payment.PaymentRequestDto;
+import nycto.homeservices.dto.payment.PaymentResponseDto;
 import nycto.homeservices.entity.*;
 import nycto.homeservices.entity.enums.OrderStatus;
+import nycto.homeservices.entity.enums.PaymentMethod;
+import nycto.homeservices.entity.enums.PaymentStatus;
 import nycto.homeservices.exceptions.NotFoundException;
 import nycto.homeservices.exceptions.NotValidInputException;
 import nycto.homeservices.repository.OrderRepository;
+import nycto.homeservices.repository.PaymentRepository;
 import nycto.homeservices.repository.ProposalRepository;
 import nycto.homeservices.repository.SpecialistRepository;
+import nycto.homeservices.service.serviceInterface.CaptchaService;
 import nycto.homeservices.service.serviceInterface.CustomerCreditService;
 import nycto.homeservices.service.serviceInterface.OrderService;
 import nycto.homeservices.service.serviceInterface.SpecialistCreditService;
@@ -19,8 +26,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -34,7 +43,9 @@ public class OrderServiceImpl implements OrderService {
 
     private final SpecialistCreditService specialistCreditService;
     private final CustomerCreditService customerCreditService;
+    private final CaptchaService captchaService;
     private final SpecialistRepository specialistRepository;
+    private final PaymentRepository paymentRepository;
     private final ProposalRepository proposalRepository;
 
 
@@ -100,9 +111,9 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public OrderResponseDto changeOrderStatus(Long orderId, OrderStatus newStatus) {
         Order order = orderRepository.findById(orderId)
-                .orElseThrow(() ->{
-                        logger.info("Changing order status for id: {} to {}", orderId, newStatus);
-                        return new NotFoundException("Order with id " + orderId + " not found");
+                .orElseThrow(() -> {
+                    logger.info("Changing order status for id: {} to {}", orderId, newStatus);
+                    return new NotFoundException("Order with id " + orderId + " not found");
                 });
 
 
@@ -176,7 +187,6 @@ public class OrderServiceImpl implements OrderService {
                 throw new NotValidInputException("Invalid current status: " + currentStatus);
         }
     }
-
 
 
     @Override
@@ -257,6 +267,96 @@ public class OrderServiceImpl implements OrderService {
         return orderRepository.findByCustomerIdAndStatus(customerId, OrderStatus.DONE).stream()
                 .map(orderMapper::toResponseDto)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional
+    public PaymentResponseDto payOrder(Long orderId, Long customerId, PaymentRequestDto paymentRequest) {
+        logger.info("Starting payment for orderId: {}, customerId: {}, method: {}",
+                orderId, customerId, paymentRequest.method());
+
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new NotFoundException("Order with id " + orderId + " not found"));
+
+        if (!order.getCustomer().getId().equals(customerId)) {
+            logger.error("Customer with id: {} is not authorized to pay for orderId: {}", customerId, orderId);
+            throw new NotValidInputException("You are not authorized to pay for this order");
+        }
+
+        if (order.getStatus() != OrderStatus.DONE) {
+            logger.error("Order with id: {} must be in DONE status to proceed with payment", orderId);
+            throw new NotValidInputException("Order must be in DONE status to proceed with payment");
+        }
+
+        Proposal selectedProposal = order.getSelectedProposal();
+        if (selectedProposal == null) {
+            logger.error("No selected proposal found for orderId: {}", orderId);
+            throw new NotFoundException("No selected proposal found for this order");
+        }
+        Specialist specialist = selectedProposal.getSpecialist();
+
+        Long orderAmount = order.getProposedPrice();
+        if (orderAmount == null || orderAmount <= 0) {
+            logger.error("Invalid order amount: {} for orderId: {}", orderAmount, orderId);
+            throw new NotValidInputException("Order amount must be positive");
+        }
+
+        Payment payment = new Payment();
+        payment.setOrder(order);
+        payment.setAmount(orderAmount);
+        payment.setMethod(paymentRequest.method());
+        payment.setTransactionId(UUID.randomUUID().toString());
+
+        if (paymentRequest.method() == PaymentMethod.ONLINE) {
+
+            if (!captchaService.validateCaptcha(paymentRequest.captchaToken())) {
+                logger.error("Invalid captcha for orderId: {}", orderId);
+                throw new NotValidInputException("Invalid captcha");
+            }
+
+            LocalDateTime paymentStartTime = LocalDateTime.now();
+            payment.setPaymentTime(paymentStartTime);
+
+
+            long timeSpentInSeconds = Duration.between(paymentStartTime, LocalDateTime.now()).getSeconds();
+            if (timeSpentInSeconds > 10 * 60) {
+                payment.setStatus(PaymentStatus.FAILED);
+                paymentRepository.save(payment);
+                logger.error("Payment timeout for orderId: {}, time spent: {} seconds", orderId, timeSpentInSeconds);
+                throw new NotValidInputException("Payment timeout: exceeded 10 minutes");
+            }
+
+            payment.setStatus(PaymentStatus.SUCCESS);
+        } else if (paymentRequest.method() == PaymentMethod.WALLET) {
+
+            customerCreditService.decreaseCustomerCredit(order.getCustomer(), orderAmount);
+            payment.setStatus(PaymentStatus.SUCCESS);
+        } else {
+            logger.error("Unsupported payment method: {} for orderId: {}", paymentRequest.method(), orderId);
+            throw new NotValidInputException("Unsupported payment method");
+        }
+
+        Payment savedPayment = paymentRepository.save(payment);
+
+        long specialistShare = (long) (orderAmount * 0.7);
+        specialistCreditService.increaseSpecialistCredit(specialist, specialistShare);
+        logger.info("Added {} to specialist credit for specialistId: {}", specialistShare, specialist.getId());
+
+        checkStatusTransition(order, OrderStatus.PAID);
+        order.setStatus(OrderStatus.PAID);
+        orderRepository.save(order);
+        logger.info("Order status changed to PAID for orderId: {}", orderId);
+
+        PaymentResponseDto response = new PaymentResponseDto(
+                savedPayment.getId(),
+                savedPayment.getAmount(),
+                savedPayment.getMethod().toString(),
+                savedPayment.getStatus().toString(),
+                savedPayment.getPaymentTime(),
+                savedPayment.getTransactionId()
+        );
+        logger.info("Payment completed successfully for orderId: {}", orderId);
+        return response;
     }
 
 }

@@ -9,4 +9,6 @@ public interface CustomerCreditRepository extends JpaRepository<CustomerCredit, 
 
     @Query("SELECT SUM(cc.amount) FROM CustomerCredit cc WHERE cc.customer.id = :customerId")
     Long findTotalCreditByCustomerId(@Param("customerId") Long customerId);
+
+    CustomerCredit findByCustomerId(@Param("customerId") Long customerId);
 }

@@ -3,6 +3,8 @@ package nycto.homeservices.service.serviceInterface;
 import nycto.homeservices.dto.orderDto.OrderCreateDto;
 import nycto.homeservices.dto.orderDto.OrderResponseDto;
 import nycto.homeservices.dto.orderDto.OrderUpdateDto;
+import nycto.homeservices.dto.payment.PaymentRequestDto;
+import nycto.homeservices.dto.payment.PaymentResponseDto;
 import nycto.homeservices.entity.Customer;
 import nycto.homeservices.entity.Order;
 import nycto.homeservices.entity.SubService;
@@ -40,4 +42,6 @@ public interface OrderService {
     OrderResponseDto confirmProposalBySpecialist(Long orderId, Long specialistId) throws NotFoundException;
 
     List<OrderResponseDto> getAvailableOrdersToPayment(Long customerId);
+
+    PaymentResponseDto payOrder(Long orderId, Long customerId, PaymentRequestDto paymentRequest);
 }

@@ -21,8 +21,8 @@ import java.util.List;
 public class Customer extends User{
 
 
-    @OneToMany(mappedBy = "customer",fetch = FetchType.LAZY)
-    List<CustomerCredit> customerCredits;
+    @OneToOne(mappedBy = "customer",fetch = FetchType.LAZY)
+    CustomerCredit customerCredits;
 
     @OneToMany(mappedBy = "customer",fetch = FetchType.LAZY)
     List<Order> orders = new ArrayList<>();

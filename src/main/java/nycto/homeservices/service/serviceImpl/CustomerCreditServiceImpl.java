@@ -1,5 +1,6 @@
 package nycto.homeservices.service.serviceImpl;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import nycto.homeservices.entity.Customer;
 import nycto.homeservices.entity.CustomerCredit;
@@ -15,8 +16,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class CustomerCreditServiceImpl implements CustomerCreditService {
     private final CustomerCreditRepository customerCreditRepository;
-
     @Override
+    @Transactional
     public void increaseCustomerCredit(Customer customer, Long amount) throws NotFoundException, CreditException {
         if (customer == null) {
             throw new NotFoundException("Customer not found");
@@ -25,14 +26,19 @@ public class CustomerCreditServiceImpl implements CustomerCreditService {
             throw new CreditException("Amount must be more than 0");
         }
 
-        CustomerCredit credit = new CustomerCredit();
-        credit.setCustomer(customer);
-        credit.setAmount(amount);
-
+        CustomerCredit credit = customerCreditRepository.findByCustomerId(customer.getId())
+                .orElseGet(() -> {
+                    CustomerCredit newCredit = new CustomerCredit();
+                    newCredit.setCustomer(customer);
+                    newCredit.setAmount(0L);
+                    return customerCreditRepository.save(newCredit);
+                });
+        credit.setAmount(credit.getAmount() + amount);
         customerCreditRepository.save(credit);
     }
 
     @Override
+    @Transactional
     public void decreaseCustomerCredit(Customer customer, Long amount) throws NotFoundException, CreditException {
         if (customer == null) {
             throw new NotFoundException("Customer not found");
@@ -41,23 +47,21 @@ public class CustomerCreditServiceImpl implements CustomerCreditService {
             throw new CreditException("Amount must be more than 0");
         }
 
-        Long totalCredit = customerCreditRepository.findTotalCreditByCustomerId(customer.getId());
-        if (totalCredit == null || totalCredit < amount) {
+        CustomerCredit credit = customerCreditRepository.findByCustomerId(customer.getId())
+                .orElseThrow(() -> new NotFoundException("Credit record not found for customer"));
+        if (credit.getAmount() < amount) {
             throw new CreditException("Insufficient credit");
         }
 
-        CustomerCredit credit = new CustomerCredit();
-        credit.setCustomer(customer);
-        credit.setAmount(-amount);
-
+        credit.setAmount(credit.getAmount() - amount);
         customerCreditRepository.save(credit);
     }
 
     @Override
     public Long getTotalCredit(Long customerId) {
-        return Optional.ofNullable(customerCreditRepository.findTotalCreditByCustomerId(customerId))
+        return customerCreditRepository.findByCustomerId(customerId)
+                .map(CustomerCredit::getAmount)
                 .orElse(0L);
     }
-
 
 }
