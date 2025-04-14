@@ -9,4 +9,6 @@ public interface TransactionsService {
     void recordTransaction(Long customerId, Long specialistId, Long creditDeducted, Long creditAdded, Long orderId, String description);
 
     List<Transactions> getTransactionHistory(Long customerId);
+
+    List<Transactions> getTransactionsByOrderId(Long orderId);
 }

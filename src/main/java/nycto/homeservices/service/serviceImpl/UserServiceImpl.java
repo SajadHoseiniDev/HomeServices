@@ -72,7 +72,7 @@ public class UserServiceImpl implements UserService {
 
 
         if (createDto.userType() == UserType.CUSTOMER) {
-            customerCreditService.increaseCustomerCredit((Customer) savedUser, 10L);
+            customerCreditService.increaseCustomerCredit((Customer) savedUser, 10000L);
         }
 
         return userMapper.toResponseDto(savedUser);

@@ -88,15 +88,24 @@ public class OrderController {
         List<OrderResponseDto> orders = orderService.getAvailableOrdersToPayment(customerId);
         return ResponseEntity.ok(orders);
     }
+    @PostMapping("/{orderId}/start-payment")
+    public ResponseEntity<String> startPayment(
+            @PathVariable Long orderId,
+            @RequestParam Long customerId) {
+        String paymentToken = orderService.startPayment(orderId, customerId);
+        return ResponseEntity.ok(paymentToken);
+    }
 
     @PostMapping("/{orderId}/pay")
     public ResponseEntity<PaymentResponseDto> payOrder(
             @PathVariable Long orderId,
             @RequestParam Long customerId,
+            @RequestParam String paymentToken,
             @Valid @RequestBody PaymentRequestDto paymentRequest) {
-        PaymentResponseDto response = orderService.payOrder(orderId, customerId, paymentRequest);
+        PaymentResponseDto response = orderService.payOrder(orderId, customerId, paymentRequest, paymentToken);
         return ResponseEntity.ok(response);
     }
+
 
 
 }

@@ -1,5 +1,6 @@
 package nycto.homeservices.service.serviceInterface;
 
+import jakarta.transaction.Transactional;
 import nycto.homeservices.dto.orderDto.OrderCreateDto;
 import nycto.homeservices.dto.orderDto.OrderResponseDto;
 import nycto.homeservices.dto.orderDto.OrderUpdateDto;
@@ -43,5 +44,8 @@ public interface OrderService {
 
     List<OrderResponseDto> getAvailableOrdersToPayment(Long customerId);
 
-    PaymentResponseDto payOrder(Long orderId, Long customerId, PaymentRequestDto paymentRequest);
+    String startPayment(Long orderId, Long customerId);
+
+    @Transactional
+    PaymentResponseDto payOrder(Long orderId, Long customerId, PaymentRequestDto paymentRequest, String paymentToken);
 }

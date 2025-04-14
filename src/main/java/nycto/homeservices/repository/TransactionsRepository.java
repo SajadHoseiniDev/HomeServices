@@ -9,5 +9,7 @@ public interface TransactionsRepository extends JpaRepository<Transactions, Long
 
     List<Transactions> findByCustomerIdOrderByTransactionDateDesc(Long customerId);
 
+    List<Transactions> findByOrderId(Long orderId);
+
     List<Transactions> findBySpecialistIdOrderByTransactionDateDesc(Long specialistId);
 }

@@ -1,6 +1,9 @@
 package nycto.homeservices.dto.payment;
 
+import nycto.homeservices.dto.transactionsDto.TransactionsDto;
+
 import java.time.LocalDateTime;
+import java.util.List;
 
 public record PaymentResponseDto(
 
@@ -9,6 +12,7 @@ public record PaymentResponseDto(
         String method,
         String status,
         LocalDateTime paymentTime,
-        String transactionId
+        String transactionId,
+        List<TransactionsDto> transactions
 ) {
 }

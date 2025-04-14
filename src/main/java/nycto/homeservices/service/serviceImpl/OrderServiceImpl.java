@@ -3,25 +3,26 @@ package nycto.homeservices.service.serviceImpl;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import nycto.homeservices.dto.dtoMapper.OrderMapper;
+import nycto.homeservices.dto.dtoMapper.PaymentMapper;
+import nycto.homeservices.dto.dtoMapper.TransactionsMapper;
 import nycto.homeservices.dto.orderDto.OrderCreateDto;
 import nycto.homeservices.dto.orderDto.OrderResponseDto;
 import nycto.homeservices.dto.orderDto.OrderUpdateDto;
 import nycto.homeservices.dto.payment.PaymentRequestDto;
 import nycto.homeservices.dto.payment.PaymentResponseDto;
+import nycto.homeservices.dto.transactionsDto.TransactionsDto;
 import nycto.homeservices.entity.*;
 import nycto.homeservices.entity.enums.OrderStatus;
 import nycto.homeservices.entity.enums.PaymentMethod;
 import nycto.homeservices.entity.enums.PaymentStatus;
+import nycto.homeservices.exceptions.CreditException;
 import nycto.homeservices.exceptions.NotFoundException;
 import nycto.homeservices.exceptions.NotValidInputException;
 import nycto.homeservices.repository.OrderRepository;
 import nycto.homeservices.repository.PaymentRepository;
 import nycto.homeservices.repository.ProposalRepository;
 import nycto.homeservices.repository.SpecialistRepository;
-import nycto.homeservices.service.serviceInterface.CaptchaService;
-import nycto.homeservices.service.serviceInterface.CustomerCreditService;
-import nycto.homeservices.service.serviceInterface.OrderService;
-import nycto.homeservices.service.serviceInterface.SpecialistCreditService;
+import nycto.homeservices.service.serviceInterface.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -29,7 +30,9 @@ import org.springframework.stereotype.Service;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 @Service
@@ -37,9 +40,11 @@ import java.util.stream.Collectors;
 public class OrderServiceImpl implements OrderService {
 
     private static final Logger logger = LoggerFactory.getLogger(OrderServiceImpl.class);
+    private final Map<String, LocalDateTime> paymentStartTimes = new ConcurrentHashMap<>();
 
     private final OrderRepository orderRepository;
     private final OrderMapper orderMapper;
+    private final TransactionsMapper transactionsMapper;
 
     private final SpecialistCreditService specialistCreditService;
     private final CustomerCreditService customerCreditService;
@@ -47,6 +52,8 @@ public class OrderServiceImpl implements OrderService {
     private final SpecialistRepository specialistRepository;
     private final PaymentRepository paymentRepository;
     private final ProposalRepository proposalRepository;
+    private final TransactionsService transactionsService;
+    private final PaymentMapper paymentMapper;
 
 
     @Override
@@ -270,9 +277,33 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    public String startPayment(Long orderId, Long customerId) {
+        logger.info("Starting payment process for orderId: {}, customerId: {}", orderId, customerId);
+
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new NotFoundException("Order with id " + orderId + " not found"));
+
+        if (!order.getCustomer().getId().equals(customerId)) {
+            logger.error("Customer with id: {} is not authorized to pay for orderId: {}", customerId, orderId);
+            throw new NotValidInputException("You are not authorized to pay for this order");
+        }
+
+        if (order.getStatus() != OrderStatus.DONE) {
+            logger.error("Order with id: {} must be in DONE status to proceed with payment", orderId);
+            throw new NotValidInputException("Order must be in DONE status to proceed with payment");
+        }
+
+        String paymentToken = UUID.randomUUID().toString();
+        paymentStartTimes.put(paymentToken, LocalDateTime.now());
+        logger.info("Payment started with token: {} for orderId: {}", paymentToken, orderId);
+        return paymentToken;
+    }
+
+
+    @Override
     @Transactional
-    public PaymentResponseDto payOrder(Long orderId, Long customerId, PaymentRequestDto paymentRequest) {
-        logger.info("Starting payment for orderId: {}, customerId: {}, method: {}",
+    public PaymentResponseDto payOrder(Long orderId, Long customerId, PaymentRequestDto paymentRequest, String paymentToken) {
+        logger.info("Completing payment for orderId: {}, customerId: {}, method: {}",
                 orderId, customerId, paymentRequest.method());
 
         Order order = orderRepository.findById(orderId)
@@ -308,55 +339,78 @@ public class OrderServiceImpl implements OrderService {
         payment.setTransactionId(UUID.randomUUID().toString());
 
         if (paymentRequest.method() == PaymentMethod.ONLINE) {
-
             if (!captchaService.validateCaptcha(paymentRequest.captchaToken())) {
                 logger.error("Invalid captcha for orderId: {}", orderId);
                 throw new NotValidInputException("Invalid captcha");
             }
 
-            LocalDateTime paymentStartTime = LocalDateTime.now();
+            LocalDateTime paymentStartTime = paymentStartTimes.get(paymentToken);
+            if (paymentStartTime == null) {
+                logger.error("Payment token not found for orderId: {}", orderId);
+                throw new NotValidInputException("Invalid payment token");
+            }
             payment.setPaymentTime(paymentStartTime);
 
-
             long timeSpentInSeconds = Duration.between(paymentStartTime, LocalDateTime.now()).getSeconds();
-            if (timeSpentInSeconds > 10 * 60) {
+
+            if (timeSpentInSeconds > 10) {
                 payment.setStatus(PaymentStatus.FAILED);
                 paymentRepository.save(payment);
                 logger.error("Payment timeout for orderId: {}, time spent: {} seconds", orderId, timeSpentInSeconds);
-                throw new NotValidInputException("Payment timeout: exceeded 10 minutes");
+                throw new NotValidInputException("Payment timeout: exceeded 10 seconds");
             }
 
             payment.setStatus(PaymentStatus.SUCCESS);
+            paymentStartTimes.remove(paymentToken);
         } else if (paymentRequest.method() == PaymentMethod.WALLET) {
-
+            Long totalCredit = customerCreditService.getTotalCredit(customerId);
+            if (totalCredit == null || totalCredit < orderAmount) {
+                logger.error("Insufficient credit for customerId: {} to pay amount: {}", customerId, orderAmount);
+                throw new CreditException("Insufficient credit to complete the payment");
+            }
             customerCreditService.decreaseCustomerCredit(order.getCustomer(), orderAmount);
             payment.setStatus(PaymentStatus.SUCCESS);
         } else {
             logger.error("Unsupported payment method: {} for orderId: {}", paymentRequest.method(), orderId);
             throw new NotValidInputException("Unsupported payment method");
         }
-
         Payment savedPayment = paymentRepository.save(payment);
+
+        transactionsService.recordTransaction(
+                customerId,
+                null,
+                orderAmount,
+                null,
+                orderId,
+                "credit decreased for order  " + orderId
+        );
 
         long specialistShare = (long) (orderAmount * 0.7);
         specialistCreditService.increaseSpecialistCredit(specialist, specialistShare);
         logger.info("Added {} to specialist credit for specialistId: {}", specialistShare, specialist.getId());
+
+        transactionsService.recordTransaction(
+                null,
+                specialist.getId(),
+                null,
+                specialistShare,
+                orderId,
+                "credit increased for order  " + orderId
+        );
 
         checkStatusTransition(order, OrderStatus.PAID);
         order.setStatus(OrderStatus.PAID);
         orderRepository.save(order);
         logger.info("Order status changed to PAID for orderId: {}", orderId);
 
-        PaymentResponseDto response = new PaymentResponseDto(
-                savedPayment.getId(),
-                savedPayment.getAmount(),
-                savedPayment.getMethod().toString(),
-                savedPayment.getStatus().toString(),
-                savedPayment.getPaymentTime(),
-                savedPayment.getTransactionId()
-        );
+        List<Transactions> transactions = transactionsService.getTransactionsByOrderId(orderId);
+        List<TransactionsDto> transactionDto = transactions.stream()
+                .map(transactionsMapper::toDto)
+                .toList();
+
+
+        PaymentResponseDto response =paymentMapper.toResponseDto(savedPayment, transactionDto);
         logger.info("Payment completed successfully for orderId: {}", orderId);
         return response;
     }
-
 }
