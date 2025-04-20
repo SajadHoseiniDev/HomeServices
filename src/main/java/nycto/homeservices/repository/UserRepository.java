@@ -36,16 +36,16 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
 
     @Query("SELECT u FROM User u WHERE u.userType = 'CUSTOMER' " +
-            "AND (:startDate IS NULL OR u.registrationDate >= :startDate) " +
-            "AND (:endDate IS NULL OR u.registrationDate <= :endDate)")
+            "AND (cast(:startDate as timestamp) IS NULL OR u.registrationDate >= :startDate) " +
+            "AND (cast(:endDate as timestamp) IS NULL OR u.registrationDate <= :endDate)")
     List<User> findCustomersByRegistrationDate(
             @Param("startDate") LocalDateTime startDate,
             @Param("endDate") LocalDateTime endDate
     );
 
     @Query("SELECT u FROM User u WHERE u.userType = 'SPECIALIST' " +
-            "AND (:startDate IS NULL OR u.registrationDate >= :startDate) " +
-            "AND (:endDate IS NULL OR u.registrationDate <= :endDate)")
+            "AND (cast(:startDate as timestamp) IS NULL OR u.registrationDate >= :startDate) " +
+            "AND (cast(:endDate as timestamp) IS NULL OR u.registrationDate <= :endDate)")
     List<User> findSpecialistsByRegistrationDate(
             @Param("startDate") LocalDateTime startDate,
             @Param("endDate") LocalDateTime endDate

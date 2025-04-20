@@ -12,6 +12,7 @@ import nycto.homeservices.exceptions.NotValidInputException;
 import nycto.homeservices.repository.UserRepository;
 import nycto.homeservices.service.serviceImpl.FileUploadServiceImpl;
 import nycto.homeservices.service.serviceInterface.UserService;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -155,8 +156,8 @@ public class UserController {
 
     @GetMapping("/admin/customer-report")
     public ResponseEntity<List<UserReportDto>> getCustomerReport(
-            @RequestParam(required = false) LocalDateTime startDate,
-            @RequestParam(required = false) LocalDateTime endDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate,
             @RequestParam Long adminId) {
         User admin = userRepository.findById(adminId)
                 .orElseThrow(() -> new NotFoundException("Admin with id " + adminId + " not found"));
@@ -170,8 +171,8 @@ public class UserController {
 
     @GetMapping("/admin/specialist-report")
     public ResponseEntity<List<UserReportDto>> getSpecialistReport(
-            @RequestParam(required = false) LocalDateTime startDate,
-            @RequestParam(required = false) LocalDateTime endDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate,
             @RequestParam Long adminId) {
         User admin = userRepository.findById(adminId)
                 .orElseThrow(() -> new NotFoundException("Admin with id " + adminId + " not found"));

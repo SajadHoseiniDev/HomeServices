@@ -30694,3 +30694,8 @@ org.hibernate.HibernateException: More than one row with the given identifier wa
 2025-04-20 10:25:16 [http-nio-9090-exec-8] ERROR o.h.e.jdbc.spi.SqlExceptionHelper - ERROR: could not determine data type of parameter $1
 2025-04-20 10:25:42 [http-nio-9090-exec-7] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Error: 0, SQLState: 42P18
 2025-04-20 10:25:42 [http-nio-9090-exec-7] ERROR o.h.e.jdbc.spi.SqlExceptionHelper - ERROR: could not determine data type of parameter $1
+2025-04-20 10:35:29 [SpringApplicationShutdownHook] INFO  o.s.b.w.e.tomcat.GracefulShutdown - Commencing graceful shutdown. Waiting for active requests to complete
+2025-04-20 10:35:29 [tomcat-shutdown] INFO  o.s.b.w.e.tomcat.GracefulShutdown - Graceful shutdown complete
+2025-04-20 10:35:29 [SpringApplicationShutdownHook] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-04-20 10:35:29 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2025-04-20 10:35:29 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
