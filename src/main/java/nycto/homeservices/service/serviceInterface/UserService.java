@@ -5,6 +5,7 @@ import nycto.homeservices.exceptions.DuplicateDataException;
 import nycto.homeservices.exceptions.NotFoundException;
 import nycto.homeservices.exceptions.NotValidInputException;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface UserService {
@@ -24,4 +25,8 @@ public interface UserService {
     List<UserResponseDto> getUsersByFilter(FilteringDto filterParams);
 
     UserHistoryDto getUserHistory(Long userId, String userType);
+
+    List<UserReportDto> getCustomerReport(LocalDateTime startDate, LocalDateTime endDate);
+
+    List<UserReportDto> getSpecialistReport(LocalDateTime startDate, LocalDateTime endDate);
 }

@@ -413,4 +413,15 @@ public class OrderServiceImpl implements OrderService {
         logger.info("Payment completed successfully for orderId: {}", orderId);
         return response;
     }
+
+
+    @Override
+    public List<OrderResponseDto> getOrdersByFilters(LocalDateTime startDate, LocalDateTime endDate, OrderStatus status, Long serviceId, Long subServiceId) {
+        logger.info("Fetching orders with filters - startDate: {}, endDate: {}, status: {}, serviceId: {}, subServiceId: {}",
+                startDate, endDate, status, serviceId, subServiceId);
+        return orderRepository.findOrdersByFilters(startDate, endDate, status, serviceId, subServiceId).stream()
+                .map(orderMapper::toResponseDto)
+                .collect(Collectors.toList());
+    }
+
 }

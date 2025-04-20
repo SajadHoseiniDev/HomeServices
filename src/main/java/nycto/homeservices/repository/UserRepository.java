@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,6 +32,23 @@ public interface UserRepository extends JpaRepository<User, Long> {
             @Param("userType") UserType userType,
             @Param("serviceName") String serviceName,
             @Param("rating") Double rating
+    );
+
+
+    @Query("SELECT u FROM User u WHERE u.userType = 'CUSTOMER' " +
+            "AND (:startDate IS NULL OR u.registrationDate >= :startDate) " +
+            "AND (:endDate IS NULL OR u.registrationDate <= :endDate)")
+    List<User> findCustomersByRegistrationDate(
+            @Param("startDate") LocalDateTime startDate,
+            @Param("endDate") LocalDateTime endDate
+    );
+
+    @Query("SELECT u FROM User u WHERE u.userType = 'SPECIALIST' " +
+            "AND (:startDate IS NULL OR u.registrationDate >= :startDate) " +
+            "AND (:endDate IS NULL OR u.registrationDate <= :endDate)")
+    List<User> findSpecialistsByRegistrationDate(
+            @Param("startDate") LocalDateTime startDate,
+            @Param("endDate") LocalDateTime endDate
     );
 
 }

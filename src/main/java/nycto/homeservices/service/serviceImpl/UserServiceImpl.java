@@ -171,5 +171,32 @@ public class UserServiceImpl implements UserService {
         return new UserHistoryDto(orders, totalCredit);
     }
 
+    @Override
+    public List<UserReportDto> getCustomerReport(LocalDateTime startDate, LocalDateTime endDate) {
+        return userRepository.findCustomersByRegistrationDate(startDate, endDate).stream()
+                .map(user -> new UserReportDto(
+                        user.getId(),
+                        user.getFirstName(),
+                        user.getLastName(),
+                        user.getRegistrationDate(),
+                        (long) orderService.getOrdersForCustomer(user.getId()).size()
+                ))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<UserReportDto> getSpecialistReport(LocalDateTime startDate, LocalDateTime endDate) {
+        return userRepository.findSpecialistsByRegistrationDate(startDate, endDate).stream()
+                .map(user -> new UserReportDto(
+                        user.getId(),
+                        user.getFirstName(),
+                        user.getLastName(),
+                        user.getRegistrationDate(),
+                        (long) orderService.getOrdersForSpecialist(user.getId()).size()
+                ))
+                .collect(Collectors.toList());
+    }
+
+
 
 }

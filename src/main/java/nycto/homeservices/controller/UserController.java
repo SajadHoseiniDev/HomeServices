@@ -5,7 +5,10 @@ import lombok.RequiredArgsConstructor;
 import nycto.homeservices.dto.specialistDto.SpecialistRegisterDto;
 import nycto.homeservices.dto.userDto.*;
 import nycto.homeservices.entity.Specialist;
+import nycto.homeservices.entity.User;
 import nycto.homeservices.entity.enums.UserType;
+import nycto.homeservices.exceptions.NotFoundException;
+import nycto.homeservices.exceptions.NotValidInputException;
 import nycto.homeservices.repository.UserRepository;
 import nycto.homeservices.service.serviceImpl.FileUploadServiceImpl;
 import nycto.homeservices.service.serviceInterface.UserService;
@@ -15,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -130,6 +134,53 @@ public class UserController {
             @Valid @RequestBody ChangeUserPasswordDto passwordDto) {
         userService.changePassword(id, passwordDto);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/{userId}/admin-history")
+    public ResponseEntity<UserHistoryDto> getUserHistoryForAdmin(
+            @PathVariable Long userId,
+            @RequestParam String userType,
+            @RequestParam Long adminId) {
+
+        User admin = userRepository.findById(adminId)
+                .orElseThrow(() -> new NotFoundException("Admin with id " + adminId + " not found"));
+        if (admin.getUserType() != UserType.ADMIN) {
+            throw new NotValidInputException("Only admins can access user history");
+        }
+
+        UserHistoryDto history = userService.getUserHistory(userId, userType);
+        return ResponseEntity.ok(history);
+    }
+
+
+    @GetMapping("/admin/customer-report")
+    public ResponseEntity<List<UserReportDto>> getCustomerReport(
+            @RequestParam(required = false) LocalDateTime startDate,
+            @RequestParam(required = false) LocalDateTime endDate,
+            @RequestParam Long adminId) {
+        User admin = userRepository.findById(adminId)
+                .orElseThrow(() -> new NotFoundException("Admin with id " + adminId + " not found"));
+        if (admin.getUserType() != UserType.ADMIN) {
+            throw new NotValidInputException("Only admins can access this endpoint");
+        }
+
+        List<UserReportDto> report = userService.getCustomerReport(startDate, endDate);
+        return ResponseEntity.ok(report);
+    }
+
+    @GetMapping("/admin/specialist-report")
+    public ResponseEntity<List<UserReportDto>> getSpecialistReport(
+            @RequestParam(required = false) LocalDateTime startDate,
+            @RequestParam(required = false) LocalDateTime endDate,
+            @RequestParam Long adminId) {
+        User admin = userRepository.findById(adminId)
+                .orElseThrow(() -> new NotFoundException("Admin with id " + adminId + " not found"));
+        if (admin.getUserType() != UserType.ADMIN) {
+            throw new NotValidInputException("Only admins can access this endpoint");
+        }
+
+        List<UserReportDto> report = userService.getSpecialistReport(startDate, endDate);
+        return ResponseEntity.ok(report);
     }
 
 }

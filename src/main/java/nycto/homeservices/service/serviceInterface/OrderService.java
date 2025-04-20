@@ -14,6 +14,7 @@ import nycto.homeservices.exceptions.CreditException;
 import nycto.homeservices.exceptions.NotFoundException;
 import nycto.homeservices.exceptions.NotValidInputException;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface OrderService {
@@ -48,4 +49,6 @@ public interface OrderService {
 
     @Transactional
     PaymentResponseDto payOrder(Long orderId, Long customerId, PaymentRequestDto paymentRequest, String paymentToken);
+
+    List<OrderResponseDto> getOrdersByFilters(LocalDateTime startDate, LocalDateTime endDate, OrderStatus status, Long serviceId, Long subServiceId);
 }

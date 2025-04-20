@@ -8,14 +8,21 @@ import nycto.homeservices.dto.payment.PaymentRequestDto;
 import nycto.homeservices.dto.payment.PaymentResponseDto;
 import nycto.homeservices.entity.Customer;
 import nycto.homeservices.entity.SubService;
+import nycto.homeservices.entity.User;
 import nycto.homeservices.entity.enums.OrderStatus;
+import nycto.homeservices.entity.enums.UserType;
+import nycto.homeservices.exceptions.NotFoundException;
+import nycto.homeservices.exceptions.NotValidInputException;
+import nycto.homeservices.repository.AdminRepository;
 import nycto.homeservices.repository.CustomerRepository;
 import nycto.homeservices.repository.SubServiceRepository;
 import nycto.homeservices.service.serviceInterface.OrderService;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -26,6 +33,7 @@ public class OrderController {
     private final OrderService orderService;
     private final CustomerRepository customerRepository;
     private final SubServiceRepository subServiceRepository;
+    private final AdminRepository adminRepository;
 
     @PostMapping
     public ResponseEntity<OrderResponseDto> createOrder(
@@ -104,6 +112,24 @@ public class OrderController {
             @Valid @RequestBody PaymentRequestDto paymentRequest) {
         PaymentResponseDto response = orderService.payOrder(orderId, customerId, paymentRequest, paymentToken);
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/admin-orders")
+    public ResponseEntity<List<OrderResponseDto>> getOrdersByFilters(
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate,
+            @RequestParam(required = false) OrderStatus status,
+            @RequestParam(required = false) Long serviceId,
+            @RequestParam(required = false) Long subServiceId,
+            @RequestParam Long adminId) {
+        User admin = adminRepository.findById(adminId)
+                .orElseThrow(() -> new NotFoundException("Admin with id " + adminId + " not found"));
+        if (admin.getUserType() != UserType.ADMIN) {
+            throw new NotValidInputException("Only admins can access this endpoint");
+        }
+
+        List<OrderResponseDto> orders = orderService.getOrdersByFilters(startDate, endDate, status, serviceId, subServiceId);
+        return ResponseEntity.ok(orders);
     }
 
 

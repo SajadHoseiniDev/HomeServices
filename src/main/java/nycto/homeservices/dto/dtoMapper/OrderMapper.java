@@ -35,19 +35,24 @@ public class OrderMapper {
     }
 
     public OrderResponseDto toResponseDto(Order order) {
-
         Proposal selectedProposal = order.getSelectedProposal();
         Long specialistId = (selectedProposal != null && selectedProposal.getSpecialist() != null)
                 ? selectedProposal.getSpecialist().getId()
                 : null;
 
+        Long customerId = (order.getCustomer() != null) ? order.getCustomer().getId() : null;
+        String customerFirstName = (order.getCustomer() != null) ? order.getCustomer().getFirstName() : null;
+        String customerLastName = (order.getCustomer() != null) ? order.getCustomer().getLastName() : null;
+        Long subServiceId = (order.getSubService() != null) ? order.getSubService().getId() : null;
+        String subServiceName = (order.getSubService() != null) ? order.getSubService().getName() : null;
+
         return new OrderResponseDto(
                 order.getId(),
-                order.getCustomer().getId(),
-                order.getCustomer().getFirstName(),
-                order.getCustomer().getLastName(),
-                order.getSubService().getId(),
-                order.getSubService().getName(),
+                customerId,
+                customerFirstName,
+                customerLastName,
+                subServiceId,
+                subServiceName,
                 specialistId,
                 order.getDescription(),
                 order.getProposedPrice(),
