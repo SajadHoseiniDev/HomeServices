@@ -18,6 +18,7 @@ import nycto.homeservices.service.serviceInterface.OrderService;
 import nycto.homeservices.service.serviceInterface.SpecialistCreditService;
 import nycto.homeservices.service.serviceInterface.UserService;
 import nycto.homeservices.dto.dtoMapper.UserMapper;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -31,6 +32,8 @@ public class UserServiceImpl implements UserService {
     private final CustomerCreditService customerCreditService;
     private final OrderService orderService;
     private final SpecialistCreditService specialistCreditService;
+
+    private final PasswordEncoder passwordEncoder;
 
     private final UserMapper userMapper;
 
@@ -67,6 +70,7 @@ public class UserServiceImpl implements UserService {
 
         user.setRegistrationDate(LocalDateTime.now());
         user.setStatus(UserStatus.NEW);
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
 
         User savedUser = userRepository.save(user);
 
@@ -120,7 +124,7 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new NotFoundException("User with id " + id + " not found"));
 
 
-        user.setPassword(passwordDto.password());
+        user.setPassword(passwordEncoder.encode(passwordDto.password()));
 
         userRepository.save(user);
 
