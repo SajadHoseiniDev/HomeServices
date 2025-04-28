@@ -1,5 +1,6 @@
 package nycto.homeservices.service.serviceInterface;
 
+import jakarta.mail.MessagingException;
 import nycto.homeservices.dto.userDto.*;
 import nycto.homeservices.exceptions.DuplicateDataException;
 import nycto.homeservices.exceptions.NotFoundException;
@@ -9,7 +10,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface UserService {
-    UserResponseDto createUser(UserCreateDto createDto) ;
+    UserResponseDto createUser(UserCreateDto createDto) throws MessagingException;
 
     UserResponseDto getUserById(Long id) throws NotFoundException;
 

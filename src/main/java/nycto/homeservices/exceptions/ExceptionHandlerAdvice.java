@@ -1,5 +1,6 @@
 package nycto.homeservices.exceptions;
 
+import jakarta.mail.MessagingException;
 import nycto.homeservices.dto.ErrorResponseDto;
 import org.hibernate.TypeMismatchException;
 import org.slf4j.Logger;
@@ -122,6 +123,16 @@ public class ExceptionHandlerAdvice {
     public ResponseEntity<ErrorResponseDto> handleJpaSystemException(JpaSystemException ex) {
         ErrorResponseDto errorDto = ErrorResponseDto.builder()
                 .message("Database error: " + ex.getMessage())
+                .statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                .build();
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorDto);
+    }
+
+    @ExceptionHandler(MessagingException.class)
+    public ResponseEntity<ErrorResponseDto> handleMessagingException(MessagingException ex) {
+        logger.error("Messaging error: {}", ex.getMessage());
+        ErrorResponseDto errorDto = ErrorResponseDto.builder()
+                .message("Messaging failed: " + ex.getMessage())
                 .statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
                 .build();
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorDto);

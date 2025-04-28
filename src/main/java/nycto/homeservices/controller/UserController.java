@@ -1,16 +1,20 @@
 package nycto.homeservices.controller;
 
+import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import nycto.homeservices.dto.specialistDto.SpecialistRegisterDto;
 import nycto.homeservices.dto.userDto.*;
+import nycto.homeservices.entity.ActivationToken;
 import nycto.homeservices.entity.Specialist;
 import nycto.homeservices.entity.User;
+import nycto.homeservices.entity.enums.UserStatus;
 import nycto.homeservices.entity.enums.UserType;
 import nycto.homeservices.exceptions.NotFoundException;
 import nycto.homeservices.exceptions.NotValidInputException;
 import nycto.homeservices.repository.UserRepository;
 import nycto.homeservices.service.serviceImpl.FileUploadServiceImpl;
+import nycto.homeservices.service.serviceInterface.ActivationTokenService;
 import nycto.homeservices.service.serviceInterface.UserService;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -29,9 +33,10 @@ public class UserController {
     private final UserService userService;
     private final UserRepository userRepository;
     private final FileUploadServiceImpl fileUploadService;
+    private final ActivationTokenService tokenService;
 
     @PostMapping("/register/customer")
-    public ResponseEntity<UserResponseDto> registerCustomer(@Valid @RequestBody UserCreateDto createDto) {
+    public ResponseEntity<UserResponseDto> registerCustomer(@Valid @RequestBody UserCreateDto createDto) throws MessagingException {
         createDto = new UserCreateDto(
                 createDto.firstName(),
                 createDto.lastName(),
@@ -45,7 +50,7 @@ public class UserController {
 
 
     @PostMapping(value = "/register/specialist", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<UserResponseDto> registerSpecialist(@Valid @ModelAttribute SpecialistRegisterDto registerDto) throws IOException, IOException {
+    public ResponseEntity<UserResponseDto> registerSpecialist(@Valid @ModelAttribute SpecialistRegisterDto registerDto) throws IOException, IOException, MessagingException {
 
         String profilePicUrl = fileUploadService.uploadFile(registerDto.getProfilePic());
 
@@ -68,7 +73,7 @@ public class UserController {
 
 
     @PostMapping("/register/admin")
-    public ResponseEntity<UserResponseDto> registerAdmin(@Valid @RequestBody UserCreateDto createDto) {
+    public ResponseEntity<UserResponseDto> registerAdmin(@Valid @RequestBody UserCreateDto createDto) throws MessagingException {
         createDto = new UserCreateDto(
                 createDto.firstName(),
                 createDto.lastName(),
@@ -183,5 +188,31 @@ public class UserController {
         List<UserReportDto> report = userService.getSpecialistReport(startDate, endDate);
         return ResponseEntity.ok(report);
     }
+
+    @GetMapping("/activate")
+    public ResponseEntity<String> activateAccount(@RequestParam("token") String token) {
+
+        ActivationToken activationToken = tokenService.validateToken(token);
+
+
+        User user = activationToken.getUser();
+        if (user.getUserType() == UserType.SPECIALIST) {
+            user.setStatus(UserStatus.PENDING_APPROVAL);
+        } else {
+            user.setStatus(UserStatus.APPROVED);
+        }
+        userRepository.save(user);
+
+
+        tokenService.markTokenAsUsed(activationToken);
+
+
+        String message = user.getUserType() == UserType.SPECIALIST
+                ? "Your account has been successfully activated. Please wait for the administrator's approval"
+                : "your account has been successfully activated!";
+        return ResponseEntity.ok(message);
+    }
+
+
 
 }

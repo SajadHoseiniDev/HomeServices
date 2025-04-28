@@ -1,22 +1,17 @@
 package nycto.homeservices.service.serviceImpl;
 
+import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import nycto.homeservices.dto.orderDto.OrderResponseDto;
 import nycto.homeservices.dto.userDto.*;
-import nycto.homeservices.entity.Admin;
-import nycto.homeservices.entity.Customer;
-import nycto.homeservices.entity.Specialist;
-import nycto.homeservices.entity.User;
+import nycto.homeservices.entity.*;
 import nycto.homeservices.entity.enums.UserStatus;
 import nycto.homeservices.entity.enums.UserType;
 import nycto.homeservices.exceptions.DuplicateDataException;
 import nycto.homeservices.exceptions.NotFoundException;
 import nycto.homeservices.exceptions.NotValidInputException;
 import nycto.homeservices.repository.UserRepository;
-import nycto.homeservices.service.serviceInterface.CustomerCreditService;
-import nycto.homeservices.service.serviceInterface.OrderService;
-import nycto.homeservices.service.serviceInterface.SpecialistCreditService;
-import nycto.homeservices.service.serviceInterface.UserService;
+import nycto.homeservices.service.serviceInterface.*;
 import nycto.homeservices.dto.dtoMapper.UserMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -32,13 +27,15 @@ public class UserServiceImpl implements UserService {
     private final CustomerCreditService customerCreditService;
     private final OrderService orderService;
     private final SpecialistCreditService specialistCreditService;
+    private final EmailService emailService;
+    private final ActivationTokenService tokenService;
 
     private final PasswordEncoder passwordEncoder;
 
     private final UserMapper userMapper;
 
     @Override
-    public UserResponseDto createUser(UserCreateDto createDto) {
+    public UserResponseDto createUser(UserCreateDto createDto) throws MessagingException {
 
         if (userRepository.findByEmail(createDto.email()).isPresent())
             throw new DuplicateDataException
@@ -73,6 +70,9 @@ public class UserServiceImpl implements UserService {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
         User savedUser = userRepository.save(user);
+
+        ActivationToken activationToken = tokenService.createActivationToken(savedUser);
+        emailService.sendActivationEmail(savedUser.getEmail(), activationToken.getToken());
 
 
         if (createDto.userType() == UserType.CUSTOMER) {
@@ -149,6 +149,7 @@ public class UserServiceImpl implements UserService {
     public UserHistoryDto getUserHistory(Long userId, String userType) {
         List<OrderResponseDto> orders;
         Long totalCredit;
+
 
         if ("CUSTOMER".equalsIgnoreCase(userType)) {
             User user = userRepository.findById(userId)
